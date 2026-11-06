@@ -499,6 +499,43 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             )
             val newId = repository.insertBaby(baby)
             preferences.setSelectedBabyId(newId)
+            if (birthWeightKg != null || birthLengthCm != null || birthHeadCircumferenceCm != null) {
+                val ageDays = WhoGrowthCalculator.calculateAgeDays(birthTimestamp, birthTimestamp)
+                val ageMonths = WhoGrowthCalculator.calculateAgeMonths(birthTimestamp, birthTimestamp)
+                val weightAssessment = birthWeightKg?.let { WhoGrowthCalculator.assessWeightForAge(it, ageMonths, sex) }
+                val lengthAssessment = birthLengthCm?.let { WhoGrowthCalculator.assessLengthForAge(it, ageMonths, sex) }
+                val headAssessment = birthHeadCircumferenceCm?.let { WhoGrowthCalculator.assessHeadCircumferenceForAge(it, ageMonths, sex) }
+                val notes = "Initial profile measurements"
+                repository.insertGrowth(
+                    GrowthEntry(
+                        babyId = newId,
+                        timestamp = birthTimestamp,
+                        weightKg = birthWeightKg,
+                        lengthCm = birthLengthCm,
+                        headCircumferenceCm = birthHeadCircumferenceCm,
+                        measurementSource = "Caregiver",
+                        notes = notes
+                    )
+                )
+                repository.insertChildMeasurement(
+                    ChildMeasurement(
+                        childId = newId,
+                        timestamp = birthTimestamp,
+                        ageInDays = ageDays,
+                        weightKg = birthWeightKg,
+                        lengthCm = birthLengthCm,
+                        headCircumferenceCm = birthHeadCircumferenceCm,
+                        weightPercentile = weightAssessment?.percentile,
+                        lengthPercentile = lengthAssessment?.percentile,
+                        headCircumferencePercentile = headAssessment?.percentile,
+                        weightZScore = weightAssessment?.zScore,
+                        lengthZScore = lengthAssessment?.zScore,
+                        headCircumferenceZScore = headAssessment?.zScore,
+                        measurementSource = "Caregiver",
+                        notes = notes
+                    )
+                )
+            }
             SmartReminderManager.saveRule(getApplication(), baby.copy(id = newId), ReminderKind.FEED,
                 com.example.reminder.ReminderRule(enabled = true, intervalMinutes = reminderInterval))
         }

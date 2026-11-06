@@ -9,12 +9,12 @@ val LavenderPrimary = Color(0xFF6E50A3)      // Main royal lavender
 val LavenderSecondary = Color(0xFFA78BFA)    // Soft vibrant lilac
 val LavenderPastelSurface = Color(0xFFEDE9FE)// Gentle pastel lavender surface
 val PlayfulAccentPink = Color(0xFFFF8FA3)    // Playful warm coral-pink accent
-val WarmBackground = Color(0xFFFFF9F5)       // Soft warm cream-white background
-val PureWhiteSurface = Color(0xFFFFFFFF)     // Clean white card surface
-val TextPrimary = Color(0xFF2C243B)          // Deep warm slate-plum text
-val TextSecondary = Color(0xFF6D637E)        // Muted purple-slate text
-val BorderSubtle = Color(0xFFEADBFA)         // Soft lavender border
-val BorderLight = Color(0xFFF3EDFD)          // Ultra light border
+val WarmBackground = Color(0xFFF2F6FA)       // Cool, quiet blue-gray canvas
+val PureWhiteSurface = Color(0xFFFFFFFF)     // Clear white card surface
+val TextPrimary = Color(0xFF202B3C)          // Deep blue-gray text
+val TextSecondary = Color(0xFF5E6B7D)        // Muted slate text
+val BorderSubtle = Color(0xFFDCE5EF)         // Cool low-contrast border
+val BorderLight = Color(0xFFE8EEF5)          // Pale slate surface border
 
 // ==========================================
 // FEATURE SPECIFIC SEMANTIC ACCENTS
@@ -43,14 +43,14 @@ val OnSleepSkyBlueContainer = Color(0xFF0369A1)
 // POLISHED NIGHTTIME DARK MODE
 // Low-glare deep plum/slate for nighttime feeds
 // ==========================================
-val DarkNightBackground = Color(0xFF121019)  // Deep midnight plum
-val DarkNightSurface = Color(0xFF1B1726)     // Calming dark card surface
-val DarkNightSurfaceVariant = Color(0xFF262136) // Elevated container
-val DarkNightPrimary = Color(0xFFD8B4FE)    // Glowing soft lilac
-val DarkNightSecondary = Color(0xFFA78BFA)  // Muted secondary lilac
-val DarkNightTextPrimary = Color(0xFFF5F3FF)// Crisp readable night text
-val DarkNightTextSecondary = Color(0xFFA79FB5)// Muted night text
-val DarkNightBorder = Color(0xFF352F48)     // Subtle dark border
+val DarkNightBackground = Color(0xFF111923)  // Deep blue-gray night canvas
+val DarkNightSurface = Color(0xFF1B2633)     // Calm dark card surface
+val DarkNightSurfaceVariant = Color(0xFF263545) // Elevated container
+val DarkNightPrimary = Color(0xFFB8C9FF)    // Soft readable periwinkle
+val DarkNightSecondary = Color(0xFF9FB6D5)  // Muted blue-gray
+val DarkNightTextPrimary = Color(0xFFF2F6FC)// Crisp readable night text
+val DarkNightTextSecondary = Color(0xFFB1BECD)// Muted night text
+val DarkNightBorder = Color(0xFF364658)     // Subtle dark border
 
 // Nighttime semantic tones
 val DarkFeedingColor = Color(0xFFC4B5FD)

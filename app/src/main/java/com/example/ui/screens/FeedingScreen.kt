@@ -36,6 +36,7 @@ fun FeedingScreen(
     var selectedTab by remember { mutableIntStateOf(0) } // 0: Bottle, 1: Breastfeeding, 2: Pumping
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -68,7 +69,7 @@ fun FeedingScreen(
                 Tab(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    text = { Text("Breastfeeding", style = MaterialTheme.typography.labelLarge) }
+                    text = { Text("Nursing", style = MaterialTheme.typography.labelLarge) }
                 )
                 Tab(
                     selected = selectedTab == 2,
@@ -247,11 +248,7 @@ private fun BottleFeedingView(viewModel: MainViewModel) {
                     Spacer(modifier = Modifier.height(14.dp))
 
                     // Remaining / Leftover milk
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Column {
                             Text(
                                 "Remaining / Wasted",
@@ -264,7 +261,7 @@ private fun BottleFeedingView(viewModel: MainViewModel) {
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             listOf(0.0, 10.0, 20.0, 30.0).forEach { r ->
                                 FilterChip(
                                     selected = remainingMl == r,

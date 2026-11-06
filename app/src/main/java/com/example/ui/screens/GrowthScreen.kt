@@ -42,11 +42,12 @@ fun GrowthScreen(
     val dateFormatter = remember { SimpleDateFormat("MMM d, yyyy", Locale.getDefault()) }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        "Growth & WHO Standards",
+                        "Growth",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                     )
                 },
@@ -71,7 +72,7 @@ fun GrowthScreen(
                 .padding(padding)
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(bottom = 80.dp)
+            contentPadding = PaddingValues(top = 8.dp, bottom = 32.dp)
         ) {
             // WHO Growth Standards Recharts & Native Chart Visualization
             item {
@@ -116,7 +117,7 @@ fun GrowthScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Column {
+                                    Column(modifier = Modifier.weight(1f)) {
                                         Text("Weight Gain", style = MaterialTheme.typography.labelSmall, color = OnGrowthMintContainer)
                                         Text(
                                             "${if (velocity.weightGainGrams >= 0) "+" else ""}${"%.0f".format(velocity.weightGainGrams)} g",
@@ -124,7 +125,7 @@ fun GrowthScreen(
                                             color = GrowthMint
                                         )
                                     }
-                                    Column {
+                                    Column(modifier = Modifier.weight(1f)) {
                                         Text("Daily Average", style = MaterialTheme.typography.labelSmall, color = OnGrowthMintContainer)
                                         Text(
                                             "${"%.1f".format(velocity.gramsPerDay)} g/day",
@@ -132,7 +133,7 @@ fun GrowthScreen(
                                             color = GrowthMint
                                         )
                                     }
-                                    Column {
+                                    Column(modifier = Modifier.weight(1f)) {
                                         Text("Weekly Average", style = MaterialTheme.typography.labelSmall, color = OnGrowthMintContainer)
                                         Text(
                                             "${"%.0f".format(velocity.gramsPerWeek)} g/week",

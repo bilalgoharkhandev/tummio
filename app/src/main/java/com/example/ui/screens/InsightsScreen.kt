@@ -39,9 +39,10 @@ fun InsightsScreen(
     var plannedFeedsCountText by remember { mutableStateOf("8") }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("Feeding Guidance & Insights", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
+                title = { Text("Insights", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
         }
@@ -50,9 +51,9 @@ fun InsightsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(bottom = 32.dp)
+            contentPadding = PaddingValues(top = 8.dp, bottom = 32.dp)
         ) {
             // 1. Feeding Guidance & Comparison Card (NHS / AAP)
             item {

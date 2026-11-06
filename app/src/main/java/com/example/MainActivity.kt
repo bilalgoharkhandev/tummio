@@ -24,9 +24,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.reminder.NotificationHelper
 import com.example.ui.MainViewModel
@@ -56,6 +58,14 @@ class MainActivity : ComponentActivity() {
                 "DARK" -> true
                 "LIGHT" -> false
                 else -> androidx.compose.foundation.isSystemInDarkTheme()
+            }
+
+            val view = LocalView.current
+            SideEffect {
+                WindowCompat.getInsetsController(window, view).apply {
+                    isAppearanceLightStatusBars = !isDark
+                    isAppearanceLightNavigationBars = !isDark
+                }
             }
 
             LittleRoutineTheme(darkTheme = isDark, dynamicColor = false) {
@@ -160,13 +170,14 @@ fun LittleRoutineApp(viewModel: MainViewModel, requestedDestination: String?, on
     )
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             if (isBottomBarVisible) {
                 NavigationBar(
                     windowInsets = WindowInsets.navigationBars,
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentColor = MaterialTheme.colorScheme.onSurface,
-                    tonalElevation = 3.dp
+                    tonalElevation = 0.dp
                 ) {
                     bottomNavItems.forEach { item ->
                         val isSelected = currentScreen == item.route
@@ -185,11 +196,11 @@ fun LittleRoutineApp(viewModel: MainViewModel, requestedDestination: String?, on
                                     contentDescription = item.label
                                 )
                             },
-                            alwaysShowLabel = false,
+                            alwaysShowLabel = true,
                             label = {
                                 Text(
                                     text = item.label,
-                                    style = MaterialTheme.typography.labelSmall
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (isSelected) androidx.compose.ui.text.font.FontWeight.SemiBold else androidx.compose.ui.text.font.FontWeight.Normal)
                                 )
                             },
                             colors = NavigationBarItemDefaults.colors(

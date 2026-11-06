@@ -213,7 +213,7 @@ fun ProfileScreen(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AddBabyDialog(
     onDismiss: () -> Unit,
@@ -238,6 +238,7 @@ fun AddBabyDialog(
     var gestWeeksText by remember { mutableStateOf("") }
     var feedingMethod by remember { mutableStateOf(FeedingMethod.MIXED) }
     var reminderIntervalMins by remember { mutableIntStateOf(180) }
+    var showBirthDatePicker by remember { mutableStateOf(false) }
 
     // Date of birth (default today or recent)
     var birthTimestamp by remember { mutableLongStateOf(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(45)) }
@@ -259,20 +260,19 @@ fun AddBabyDialog(
                 }
 
                 item {
-                    Text("Sex Category (Required for WHO Growth Standards):", style = MaterialTheme.typography.labelSmall)
+                    Text("Growth reference", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
+                    Text("Choose the WHO reference used for this profile.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        FilterChip(
-                            selected = sex == SexCategory.BOY,
-                            onClick = { sex = SexCategory.BOY },
-                            label = { Text("Boy (WHO Reference)") },
-                            modifier = Modifier.weight(1f)
-                        )
-                        FilterChip(
-                            selected = sex == SexCategory.GIRL,
-                            onClick = { sex = SexCategory.GIRL },
-                            label = { Text("Girl (WHO Reference)") },
-                            modifier = Modifier.weight(1f)
-                        )
+                        SexReferenceChoice("Girl", sex == SexCategory.GIRL, Modifier.weight(1f)) { sex = SexCategory.GIRL }
+                        SexReferenceChoice("Boy", sex == SexCategory.BOY, Modifier.weight(1f)) { sex = SexCategory.BOY }
+                    }
+                }
+
+                item {
+                    OutlinedButton(onClick = { showBirthDatePicker = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 54.dp), shape = RoundedCornerShape(14.dp)) {
+                        Icon(Icons.Default.CalendarMonth, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Born ${SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()).format(Date(birthTimestamp))}")
                     }
                 }
 
@@ -352,4 +352,31 @@ fun AddBabyDialog(
             TextButton(onClick = onDismiss) { Text("Cancel") }
         }
     )
+
+    if (showBirthDatePicker) {
+        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = birthTimestamp)
+        DatePickerDialog(
+            onDismissRequest = { showBirthDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = { datePickerState.selectedDateMillis?.let { birthTimestamp = it }; showBirthDatePicker = false }) { Text("Choose date") }
+            },
+            dismissButton = { TextButton(onClick = { showBirthDatePicker = false }) { Text("Cancel") } }
+        ) { DatePicker(state = datePickerState, showModeToggle = false) }
+    }
+}
+
+@Composable
+private fun SexReferenceChoice(label: String, selected: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        modifier = modifier.heightIn(min = 84.dp),
+        shape = RoundedCornerShape(14.dp),
+        color = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+        border = androidx.compose.foundation.BorderStroke(if (selected) 2.dp else 1.dp, if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Column(Modifier.fillMaxWidth().padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            Text(label, style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = MaterialTheme.colorScheme.onSurface)
+            Text("WHO chart", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
 }
