@@ -11,52 +11,56 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-private val LightColorScheme = lightColorScheme(
-    primary = MonoDarkSlate,
+private val LavenderBlissLightColorScheme = lightColorScheme(
+    primary = LavenderPrimary,
     onPrimary = Color.White,
-    primaryContainer = MonoSurfaceVariantLight,
-    onPrimaryContainer = MonoDarkSlate,
-    secondary = MonoMediumSlate,
+    primaryContainer = LavenderPastelSurface,
+    onPrimaryContainer = Color(0xFF4C1D95),
+    secondary = LavenderSecondary,
     onSecondary = Color.White,
-    secondaryContainer = MonoBorderUltraLight,
-    onSecondaryContainer = MonoDarkSlate,
-    tertiary = AccentLavenderSlate,
+    secondaryContainer = Color(0xFFF5F3FF),
+    onSecondaryContainer = Color(0xFF5B21B6),
+    tertiary = PlayfulAccentPink,
     onTertiary = Color.White,
-    background = MonoBackgroundLight,
-    onBackground = MonoDarkSlate,
-    surface = MonoSurfaceLight,
-    onSurface = MonoDarkSlate,
-    surfaceVariant = MonoSurfaceVariantLight,
-    onSurfaceVariant = MonoMediumSlate,
-    outline = MonoBorderLight,
-    outlineVariant = MonoBorderUltraLight
+    tertiaryContainer = Color(0xFFFFE4E6),
+    onTertiaryContainer = Color(0xFF9F1239),
+    background = WarmBackground,
+    onBackground = TextPrimary,
+    surface = PureWhiteSurface,
+    onSurface = TextPrimary,
+    surfaceVariant = LavenderPastelSurface,
+    onSurfaceVariant = TextSecondary,
+    outline = BorderSubtle,
+    outlineVariant = BorderLight
 )
 
-private val DarkColorScheme = darkColorScheme(
-    primary = MonoTextPrimaryDark,
-    onPrimary = MonoBackgroundDark,
-    primaryContainer = MonoSurfaceVariantDark,
-    onPrimaryContainer = MonoTextPrimaryDark,
-    secondary = MonoTextSecondaryDark,
-    onSecondary = MonoBackgroundDark,
-    secondaryContainer = MonoBorderDark,
-    onSecondaryContainer = MonoTextPrimaryDark,
-    tertiary = AccentLavenderSlate,
-    onTertiary = Color.White,
-    background = MonoBackgroundDark,
-    onBackground = MonoTextPrimaryDark,
-    surface = MonoSurfaceDark,
-    onSurface = MonoTextPrimaryDark,
-    surfaceVariant = MonoSurfaceVariantDark,
-    onSurfaceVariant = MonoTextSecondaryDark,
-    outline = MonoBorderDark,
-    outlineVariant = MonoBorderDark
+private val LavenderBlissDarkColorScheme = darkColorScheme(
+    primary = DarkNightPrimary,
+    onPrimary = Color(0xFF2E1065),
+    primaryContainer = DarkNightSurfaceVariant,
+    onPrimaryContainer = DarkNightPrimary,
+    secondary = DarkNightSecondary,
+    onSecondary = DarkNightBackground,
+    secondaryContainer = Color(0xFF342B47),
+    onSecondaryContainer = Color(0xFFE9D5FF),
+    tertiary = PlayfulAccentPink,
+    onTertiary = DarkNightBackground,
+    tertiaryContainer = Color(0xFF4C1D30),
+    onTertiaryContainer = Color(0xFFFFD1DC),
+    background = DarkNightBackground,
+    onBackground = DarkNightTextPrimary,
+    surface = DarkNightSurface,
+    onSurface = DarkNightTextPrimary,
+    surfaceVariant = DarkNightSurfaceVariant,
+    onSurfaceVariant = DarkNightTextSecondary,
+    outline = DarkNightBorder,
+    outlineVariant = Color(0xFF2E283D)
 )
 
 @Composable
 fun LittleRoutineTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Keep false to preserve curated monochromatic light palette
+    dynamicColor: Boolean = false, // Keep false to preserve curated Lavender Bliss design system
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -64,8 +68,8 @@ fun LittleRoutineTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> LavenderBlissDarkColorScheme
+        else -> LavenderBlissLightColorScheme
     }
 
     MaterialTheme(

@@ -1,7 +1,9 @@
 package com.example.ui.screens
 
 import androidx.compose.animation.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,14 +17,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.R
 import com.example.data.model.FeedingType
+import com.example.guidelines.GuidelineComparison
 import com.example.ui.DailySummary
 import com.example.ui.MainViewModel
+import com.example.ui.theme.*
 import com.example.who.WhoGrowthCalculator
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,41 +49,47 @@ fun HomeScreen(
     val dailySummary by viewModel.dailySummary.collectAsState()
     val latestGrowth by viewModel.latestGrowth.collectAsState()
     val latestWhoAssessment by viewModel.latestWhoAssessment.collectAsState()
+    val guidelineComparison by viewModel.guidelineComparison.collectAsState()
     val nowTicker by viewModel.currentTicker.collectAsState()
-    val timeFormatter = remember { SimpleDateFormat("h:mm a", Locale.getDefault()) }
     val dateFormatter = remember { SimpleDateFormat("MMM d", Locale.getDefault()) }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier
                             .clickable { onNavigate("profile") }
                             .padding(vertical = 4.dp)
                     ) {
-                        Box(
+                        // Baby avatar from attachment
+                        Image(
+                            painter = painterResource(R.drawable.app_hero_avatar),
+                            contentDescription = "Baby Profile",
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                .size(38.dp)
+                                .size(42.dp)
                                 .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surfaceVariant),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.ChildCare,
-                                contentDescription = "Baby Profile",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(22.dp)
-                            )
-                        }
+                                .border(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), CircleShape)
+                        )
                         Column {
-                            Text(
-                                text = activeBaby?.name ?: "LittleRoutine",
-                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Text(
+                                    text = activeBaby?.name ?: "LittleRoutine",
+                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                                // Playful heart icon
+                                Icon(
+                                    imageVector = Icons.Default.Favorite,
+                                    contentDescription = null,
+                                    tint = PlayfulAccentPink,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                            }
                             if (activeBaby != null) {
                                 val ageDays = WhoGrowthCalculator.calculateAgeDays(activeBaby!!.birthTimestamp, nowTicker)
                                 val months = ageDays / 30
@@ -94,13 +109,13 @@ fun HomeScreen(
                         onClick = { onNavigate("profile") },
                         modifier = Modifier.testTag("action_switch_profile")
                     ) {
-                        Icon(Icons.Outlined.People, contentDescription = "Switch Baby Profile")
+                        Icon(Icons.Outlined.People, contentDescription = "Switch Baby Profile", tint = MaterialTheme.colorScheme.primary)
                     }
                     IconButton(
                         onClick = { onNavigate("settings") },
                         modifier = Modifier.testTag("action_settings")
                     ) {
-                        Icon(Icons.Outlined.Settings, contentDescription = "Settings")
+                        Icon(Icons.Outlined.Settings, contentDescription = "Settings", tint = MaterialTheme.colorScheme.primary)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -114,10 +129,10 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
-            contentPadding = PaddingValues(bottom = 24.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(top = 8.dp, bottom = 28.dp)
         ) {
-            // 1. Next Planned Feeding Card
+            // 1. Next Planned Feeding Card with Lavender Bliss Gradient
             item {
                 NextFeedingCard(
                     babyName = activeBaby?.name ?: "Baby",
@@ -131,90 +146,131 @@ fun HomeScreen(
                 )
             }
 
-            // 2. Quick Action Grid
+            // 2. Playful Semantic Quick Action Grid (Lavender for Feeding, Peach for Diapers, Sky Blue for Sleep, Mint for Growth)
             item {
                 Text(
                     text = "Quick Actions",
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-                    color = MaterialTheme.colorScheme.onSurface
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onBackground
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    QuickActionButton(
+                    // Feeding (Lavender)
+                    PlayfulQuickButton(
                         icon = Icons.Outlined.LocalDrink,
                         label = "Bottle",
+                        containerColor = FeedingContainer,
+                        contentColor = OnFeedingContainer,
+                        iconColor = FeedingColor,
                         modifier = Modifier.weight(1f).testTag("quick_action_bottle"),
                         onClick = { onNavigate("feeding") }
                     )
-                    QuickActionButton(
+                    // Feeding Timer (Lavender)
+                    PlayfulQuickButton(
                         icon = Icons.Outlined.Timer,
                         label = "Nursing",
+                        containerColor = FeedingContainer,
+                        contentColor = OnFeedingContainer,
+                        iconColor = FeedingColor,
                         modifier = Modifier.weight(1f).testTag("quick_action_nursing"),
                         onClick = { onNavigate("feeding") }
                     )
-                    QuickActionButton(
+                    // Diapers (Peach)
+                    PlayfulQuickButton(
                         icon = Icons.Outlined.BabyChangingStation,
                         label = "Diaper",
+                        containerColor = DiaperPeachContainer,
+                        contentColor = OnDiaperPeachContainer,
+                        iconColor = DiaperPeach,
                         modifier = Modifier.weight(1f).testTag("quick_action_diaper"),
                         onClick = { onNavigate("diaper") }
                     )
-                    QuickActionButton(
+                    // Sleep (Sky Blue)
+                    PlayfulQuickButton(
                         icon = Icons.Outlined.Bedtime,
                         label = "Sleep",
+                        containerColor = SleepSkyBlueContainer,
+                        contentColor = OnSleepSkyBlueContainer,
+                        iconColor = SleepSkyBlue,
                         modifier = Modifier.weight(1f).testTag("quick_action_sleep"),
                         onClick = { onNavigate("sleep") }
+                    )
+                    // Growth (Mint)
+                    PlayfulQuickButton(
+                        icon = Icons.Outlined.Straighten,
+                        label = "Growth",
+                        containerColor = GrowthMintContainer,
+                        contentColor = OnGrowthMintContainer,
+                        iconColor = GrowthMint,
+                        modifier = Modifier.weight(1f).testTag("quick_action_growth"),
+                        onClick = { onNavigate("growth") }
                     )
                 }
             }
 
-            // 3. Daily Nutrition & Intake Snapshot
+            // 3. Daily Nutrition & Intake Snapshot (Lavender Bliss styling)
             item {
                 DailyNutritionCard(
                     summary = dailySummary,
+                    comparison = guidelineComparison,
                     onViewDetails = { onNavigate("insights") }
                 )
             }
 
-            // 4. Growth Snapshot Card
+            // 4. Growth Snapshot Card (Mint Accent for Growth)
             item {
                 Card(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(22.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                    border = androidx.compose.foundation.BorderStroke(1.5.dp, GrowthMintContainer),
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onNavigate("growth") }
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier.padding(18.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Icon(
-                                    Icons.Outlined.Straighten,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(20.dp)
-                                )
+                                Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .clip(CircleShape)
+                                        .background(GrowthMintContainer),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        Icons.Outlined.Straighten,
+                                        contentDescription = null,
+                                        tint = GrowthMint,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
                                 Text(
                                     text = "Growth Snapshot",
-                                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
-                            Text(
-                                text = "WHO Standards",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            Surface(
+                                color = GrowthMintContainer,
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text(
+                                    text = "WHO Standards",
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                                    color = OnGrowthMintContainer,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                )
+                            }
                         }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(14.dp))
 
                         if (latestGrowth != null) {
                             Row(
@@ -224,22 +280,25 @@ fun HomeScreen(
                                 GrowthMetricColumn(
                                     title = "Weight",
                                     value = "${latestGrowth!!.weightKg ?: "--"} kg",
-                                    subtext = latestWhoAssessment?.let { "~${it.percentile.roundToInt()}th %ile" } ?: "Logged"
+                                    subtext = latestWhoAssessment?.let { "~${it.percentile.roundToInt()}th %ile" } ?: "Logged",
+                                    accentColor = GrowthMint
                                 )
                                 GrowthMetricColumn(
                                     title = "Length",
                                     value = "${latestGrowth!!.lengthCm ?: "--"} cm",
-                                    subtext = if (latestGrowth!!.isRecumbent) "Recumbent" else "Standing"
+                                    subtext = if (latestGrowth!!.isRecumbent) "Recumbent" else "Standing",
+                                    accentColor = GrowthMint
                                 )
                                 GrowthMetricColumn(
                                     title = "Head Circ.",
                                     value = "${latestGrowth!!.headCircumferenceCm ?: "--"} cm",
-                                    subtext = dateFormatter.format(Date(latestGrowth!!.timestamp))
+                                    subtext = dateFormatter.format(Date(latestGrowth!!.timestamp)),
+                                    accentColor = GrowthMint
                                 )
                             }
                         } else {
                             Text(
-                                text = "No growth measurements recorded yet. Tap to record baby's weight and length.",
+                                text = "No growth measurements recorded yet. Tap to record baby's weight and length against WHO curves.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -248,34 +307,44 @@ fun HomeScreen(
                 }
             }
 
-            // 5. CDC Bottle Safety Alert / Active Bottles (if any)
+            // 5. Formula Management & CDC Bottle Safety Card
             item {
                 Card(
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                    shape = RoundedCornerShape(22.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onNavigate("formula") }
                 ) {
                     Row(
-                        modifier = Modifier.padding(14.dp),
+                        modifier = Modifier.padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        horizontalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
-                        Icon(
-                            Icons.Outlined.Shield,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(24.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .size(42.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(LavenderPastelSurface),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Outlined.Shield,
+                                contentDescription = null,
+                                tint = LavenderPrimary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = "Formula Management & Safety",
-                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
+                            Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = "CDC preparation guidelines, scoop ratio calculator, and powder inventory.",
+                                text = "CDC preparation guidelines, scoop ratio calculator, and safety countdown.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -283,7 +352,7 @@ fun HomeScreen(
                         Icon(
                             Icons.Default.ChevronRight,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = LavenderPrimary
                         )
                     }
                 }
@@ -311,103 +380,133 @@ private fun NextFeedingCard(
     val isOverdue = diffMillis <= 0
     val timeFormatter = remember { SimpleDateFormat("h:mm a", Locale.getDefault()) }
 
+    // Soft Lavender to Lilac gradient
+    val cardGradient = Brush.linearGradient(
+        colors = listOf(LavenderPrimary, LavenderSecondary)
+    )
+
     Card(
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary
-        ),
-        modifier = Modifier.fillMaxWidth()
+        shape = RoundedCornerShape(26.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(26.dp))
     ) {
-        Column(
-            modifier = Modifier.padding(20.dp)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(cardGradient)
+                .padding(22.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "NEXT PLANNED FEED",
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
-                    letterSpacing = 1.sp
-                )
-                Text(
-                    text = timeFormatter.format(Date(nextFeedTimestamp)),
-                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Main Countdown or Due Notice
-            val countdownText = if (isOverdue) {
-                val overdueMins = TimeUnit.MILLISECONDS.toMinutes(-diffMillis)
-                if (overdueMins > 60) "Due (${overdueMins / 60}h ${overdueMins % 60}m ago)" else "Due (${overdueMins}m ago)"
-            } else {
-                val remHours = TimeUnit.MILLISECONDS.toHours(diffMillis)
-                val remMins = TimeUnit.MILLISECONDS.toMinutes(diffMillis) % 60
-                if (remHours > 0) "in ${remHours}h ${remMins}m" else "in ${remMins}m"
-            }
-
-            Text(
-                text = countdownText,
-                style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            // Last feed context
-            val lastFeedDesc = if (lastFeedTime != null) {
-                val elapsedH = TimeUnit.MILLISECONDS.toHours(elapsedSinceLastMillis)
-                val elapsedM = TimeUnit.MILLISECONDS.toMinutes(elapsedSinceLastMillis) % 60
-                val elapsedStr = if (elapsedH > 0) "${elapsedH}h ${elapsedM}m" else "${elapsedM}m"
-                val amountStr = if (lastFeedAmount != null && lastFeedAmount > 0) " • ${lastFeedAmount.roundToInt()} mL" else ""
-                val typeStr = lastFeedType?.name?.replace("_", " ")?.lowercase() ?: "feed"
-                "Last: $elapsedStr ago ($typeStr$amountStr)"
-            } else {
-                "No previous feed recorded today"
-            }
-
-            Text(
-                text = lastFeedDesc,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Action buttons inside card
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Button(
-                    onClick = onLogFeed,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.weight(1f).testTag("home_button_record_feed")
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Record Feed", style = MaterialTheme.typography.labelLarge)
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text(
+                            text = "NEXT PLANNED FEED",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                            color = Color.White.copy(alpha = 0.85f),
+                            letterSpacing = 1.2.sp
+                        )
+                        // Playful heart badge
+                        Surface(
+                            color = PlayfulAccentPink,
+                            shape = CircleShape,
+                            modifier = Modifier.size(16.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Default.Favorite,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(10.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    Surface(
+                        color = Color.White.copy(alpha = 0.2f),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = timeFormatter.format(Date(nextFeedTimestamp)),
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
                 }
 
-                OutlinedButton(
-                    onClick = onSnooze,
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f)),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.testTag("home_button_snooze")
+                Spacer(modifier = Modifier.height(12.dp))
+
+                val countdownText = if (isOverdue) {
+                    val overdueMins = TimeUnit.MILLISECONDS.toMinutes(-diffMillis)
+                    if (overdueMins > 60) "Due (${overdueMins / 60}h ${overdueMins % 60}m ago)" else "Due (${overdueMins}m ago)"
+                } else {
+                    val remHours = TimeUnit.MILLISECONDS.toHours(diffMillis)
+                    val remMins = TimeUnit.MILLISECONDS.toMinutes(diffMillis) % 60
+                    if (remHours > 0) "in ${remHours}h ${remMins}m" else "in ${remMins}m"
+                }
+
+                Text(
+                    text = countdownText,
+                    style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.ExtraBold),
+                    color = Color.White
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                val lastFeedDesc = if (lastFeedTime != null) {
+                    val elapsedH = TimeUnit.MILLISECONDS.toHours(elapsedSinceLastMillis)
+                    val elapsedM = TimeUnit.MILLISECONDS.toMinutes(elapsedSinceLastMillis) % 60
+                    val elapsedStr = if (elapsedH > 0) "${elapsedH}h ${elapsedM}m" else "${elapsedM}m"
+                    val amountStr = if (lastFeedAmount != null && lastFeedAmount > 0) " • ${lastFeedAmount.roundToInt()} mL" else ""
+                    val typeStr = lastFeedType?.name?.replace("_", " ")?.lowercase() ?: "feed"
+                    "Last: $elapsedStr ago ($typeStr$amountStr)"
+                } else {
+                    "No previous feed recorded today"
+                }
+
+                Text(
+                    text = lastFeedDesc,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.9f)
+                )
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Text("+15m Snooze", style = MaterialTheme.typography.labelLarge)
+                    Button(
+                        onClick = onLogFeed,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = LavenderPrimary
+                        ),
+                        shape = RoundedCornerShape(14.dp),
+                        modifier = Modifier.weight(1f).height(46.dp).testTag("home_button_record_feed")
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Record Feed", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold))
+                    }
+
+                    OutlinedButton(
+                        onClick = onSnooze,
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = Color.White
+                        ),
+                        border = androidx.compose.foundation.BorderStroke(1.5.dp, Color.White.copy(alpha = 0.5f)),
+                        shape = RoundedCornerShape(14.dp),
+                        modifier = Modifier.height(46.dp).testTag("home_button_snooze")
+                    ) {
+                        Text("+15m Snooze", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold))
+                    }
                 }
             }
         }
@@ -415,18 +514,21 @@ private fun NextFeedingCard(
 }
 
 @Composable
-private fun QuickActionButton(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+private fun PlayfulQuickButton(
+    icon: ImageVector,
     label: String,
+    containerColor: Color,
+    contentColor: Color,
+    iconColor: Color,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(14.dp),
-        color = MaterialTheme.colorScheme.surface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-        modifier = modifier.height(68.dp)
+        shape = RoundedCornerShape(18.dp),
+        color = containerColor,
+        border = androidx.compose.foundation.BorderStroke(1.dp, iconColor.copy(alpha = 0.25f)),
+        modifier = modifier.height(72.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -436,14 +538,14 @@ private fun QuickActionButton(
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(22.dp)
+                tint = iconColor,
+                modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
-                color = MaterialTheme.colorScheme.onSurface
+                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                color = contentColor
             )
         }
     }
@@ -452,34 +554,51 @@ private fun QuickActionButton(
 @Composable
 private fun DailyNutritionCard(
     summary: DailySummary,
+    comparison: GuidelineComparison?,
     onViewDetails: () -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(18.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(LavenderPastelSurface),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Outlined.LocalDrink,
+                            contentDescription = null,
+                            tint = LavenderPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    Text(
+                        text = "Past 24 Hours Intake",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
                 Text(
-                    text = "Past 24 Hours Intake",
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = "View Insights",
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                    text = "View Insights →",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.clickable { onViewDetails() }
                 )
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -488,22 +607,64 @@ private fun DailyNutritionCard(
                 NutritionColumn(
                     title = "Measurable Bottle",
                     value = "${summary.totalBottleIntakeMl.roundToInt()} mL",
-                    subtext = "${summary.bottleSessionsCount} feeds"
+                    subtext = "${summary.bottleSessionsCount} feeds",
+                    badgeColor = LavenderPrimary
                 )
                 NutritionColumn(
                     title = "Formula / EBM",
                     value = "${summary.formulaConsumedMl.roundToInt()} / ${summary.ebmConsumedMl.roundToInt()} mL",
-                    subtext = "Split"
+                    subtext = "Intake split",
+                    badgeColor = LavenderSecondary
                 )
                 NutritionColumn(
                     title = "Direct Nursing",
                     value = "${summary.nursingTotalMinutes} mins",
-                    subtext = "${summary.nursingSessionsCount} sessions"
+                    subtext = "${summary.nursingSessionsCount} sessions",
+                    badgeColor = PlayfulAccentPink
                 )
             }
 
+            // Required Intake based on Weight & Age
+            if (comparison?.weightKgUsed != null) {
+                Spacer(modifier = Modifier.height(14.dp))
+                Surface(
+                    color = LavenderPastelSurface.copy(alpha = 0.6f),
+                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier.fillMaxWidth().clickable { onViewDetails() }
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Target for ${comparison.weightKgUsed} kg (${comparison.selectedGuidelineName}):",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = TextSecondary
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "${comparison.referenceRangeLowerMl.roundToInt()} – ${comparison.referenceRangeUpperMl.roundToInt()} mL / 24 hours",
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                color = LavenderPrimary
+                            )
+                        }
+                        SuggestionChip(
+                            onClick = onViewDetails,
+                            label = { Text("Details ⓘ", style = MaterialTheme.typography.labelSmall) },
+                            colors = SuggestionChipDefaults.suggestionChipColors(
+                                containerColor = LavenderPastelSurface,
+                                labelColor = LavenderPrimary
+                            ),
+                            border = null
+                        )
+                    }
+                }
+            }
+
             if (summary.averageBottleMl > 0) {
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 Spacer(modifier = Modifier.height(10.dp))
                 Row(
@@ -511,7 +672,7 @@ private fun DailyNutritionCard(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Average bottle volume: ${summary.averageBottleMl.roundToInt()} mL",
+                        text = "Avg bottle: ${summary.averageBottleMl.roundToInt()} mL",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -529,21 +690,21 @@ private fun DailyNutritionCard(
 }
 
 @Composable
-private fun NutritionColumn(title: String, value: String, subtext: String) {
+private fun NutritionColumn(title: String, value: String, subtext: String, badgeColor: Color) {
     Column {
         Text(text = title, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(text = value, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
+        Spacer(modifier = Modifier.height(3.dp))
+        Text(text = value, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = badgeColor)
         Text(text = subtext, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
 @Composable
-private fun GrowthMetricColumn(title: String, value: String, subtext: String) {
+private fun GrowthMetricColumn(title: String, value: String, subtext: String, accentColor: Color) {
     Column {
         Text(text = title, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(text = value, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
+        Spacer(modifier = Modifier.height(3.dp))
+        Text(text = value, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold), color = accentColor)
         Text(text = subtext, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

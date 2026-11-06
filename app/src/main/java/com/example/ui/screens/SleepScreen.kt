@@ -15,6 +15,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.ui.MainViewModel
+import com.example.ui.theme.OnSleepSkyBlueContainer
+import com.example.ui.theme.SleepSkyBlue
+import com.example.ui.theme.SleepSkyBlueContainer
 import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,24 +61,25 @@ fun SleepScreen(
             // 24h Sleep Duration Card
             item {
                 Card(
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = SleepSkyBlueContainer.copy(alpha = 0.65f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Past 24-Hour Sleep Total", style = MaterialTheme.typography.labelSmall)
+                    Column(modifier = Modifier.padding(18.dp)) {
+                        Text("Past 24-Hour Sleep Total", style = MaterialTheme.typography.labelSmall, color = OnSleepSkyBlueContainer)
                         Spacer(modifier = Modifier.height(4.dp))
                         val h = summary.sleepTotalMinutes / 60
                         val m = summary.sleepTotalMinutes % 60
                         Text(
                             "${h}h ${m}m recorded",
-                            style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.primary
+                            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                            color = SleepSkyBlue
                         )
+                        Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             "Newborns typically sleep 14–17 hours in 24 hours in short intervals.",
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = OnSleepSkyBlueContainer.copy(alpha = 0.85f)
                         )
                     }
                 }
@@ -84,9 +88,9 @@ fun SleepScreen(
             // Live Sleep Stopwatch
             item {
                 Card(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, SleepSkyBlue.copy(alpha = 0.3f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
@@ -107,8 +111,8 @@ fun SleepScreen(
 
                         Text(
                             text = String.format("%02d:%02d:%02d", elapsedH, elapsedM, elapsedS),
-                            style = MaterialTheme.typography.displayLarge.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurface
+                            style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Bold),
+                            color = if (isSleeping) SleepSkyBlue else MaterialTheme.colorScheme.onSurface
                         )
 
                         Spacer(modifier = Modifier.height(14.dp))
@@ -119,12 +123,16 @@ fun SleepScreen(
                                     isSleeping = true
                                     sleepStartTimestamp = System.currentTimeMillis()
                                 },
-                                shape = RoundedCornerShape(12.dp),
+                                shape = RoundedCornerShape(14.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = SleepSkyBlue,
+                                    contentColor = androidx.compose.ui.graphics.Color.White
+                                ),
                                 modifier = Modifier.fillMaxWidth().height(48.dp)
                             ) {
                                 Icon(Icons.Default.Bedtime, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Start Sleep Session")
+                                Text("Start Sleep Session", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
                             }
                         } else {
                             Button(
@@ -135,14 +143,15 @@ fun SleepScreen(
                                     savedMessage = true
                                 },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary
+                                    containerColor = SleepSkyBlue,
+                                    contentColor = androidx.compose.ui.graphics.Color.White
                                 ),
-                                shape = RoundedCornerShape(12.dp),
+                                shape = RoundedCornerShape(14.dp),
                                 modifier = Modifier.fillMaxWidth().height(48.dp)
                             ) {
                                 Icon(Icons.Default.WbSunny, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Baby Woke Up (Finish & Save)")
+                                Text("Baby Woke Up (Finish & Save)", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
                             }
                         }
                     }
@@ -152,12 +161,12 @@ fun SleepScreen(
             // Manual Sleep Entry
             item {
                 Card(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Text(
                             "Manual Sleep Entry",
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
@@ -168,13 +177,23 @@ fun SleepScreen(
                                 selected = isNap,
                                 onClick = { isNap = true },
                                 label = { Text("Day Nap") },
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = SleepSkyBlue,
+                                    selectedLabelColor = androidx.compose.ui.graphics.Color.White
+                                )
                             )
                             FilterChip(
                                 selected = !isNap,
                                 onClick = { isNap = false },
                                 label = { Text("Night Sleep") },
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = SleepSkyBlue,
+                                    selectedLabelColor = androidx.compose.ui.graphics.Color.White
+                                )
                             )
                         }
 
@@ -182,7 +201,7 @@ fun SleepScreen(
                             value = manualDurationMinsText,
                             onValueChange = { manualDurationMinsText = it },
                             label = { Text("Duration (minutes)") },
-                            shape = RoundedCornerShape(10.dp),
+                            shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.fillMaxWidth()
                         )
 
@@ -191,7 +210,12 @@ fun SleepScreen(
                                 FilterChip(
                                     selected = quality == q,
                                     onClick = { quality = q },
-                                    label = { Text(q, style = MaterialTheme.typography.labelSmall) }
+                                    label = { Text(q, style = MaterialTheme.typography.labelSmall) },
+                                    shape = RoundedCornerShape(10.dp),
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = SleepSkyBlue,
+                                        selectedLabelColor = androidx.compose.ui.graphics.Color.White
+                                    )
                                 )
                             }
                         }
@@ -204,10 +228,14 @@ fun SleepScreen(
                                 viewModel.logSleep(start, end, isNap, quality, notes)
                                 savedMessage = true
                             },
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(14.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = SleepSkyBlue,
+                                contentColor = androidx.compose.ui.graphics.Color.White
+                            ),
                             modifier = Modifier.fillMaxWidth().height(48.dp)
                         ) {
-                            Text("Save Sleep Record")
+                            Text("Save Sleep Record", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
                         }
                     }
                 }
@@ -215,7 +243,7 @@ fun SleepScreen(
 
             if (savedMessage) {
                 item {
-                    Text("✓ Sleep session saved to timeline.", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.bodySmall)
+                    Text("✓ Sleep session saved to timeline.", color = SleepSkyBlue, style = MaterialTheme.typography.bodySmall)
                 }
             }
         }

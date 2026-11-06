@@ -17,6 +17,9 @@ import androidx.compose.ui.unit.dp
 import com.example.data.model.DiaperType
 import com.example.data.model.StoolConsistency
 import com.example.ui.MainViewModel
+import com.example.ui.theme.DiaperPeach
+import com.example.ui.theme.DiaperPeachContainer
+import com.example.ui.theme.OnDiaperPeachContainer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,26 +58,26 @@ fun DiaperScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(bottom = 32.dp)
         ) {
-            // 24h Summary Card
+            // 24h Summary Card with Peach Container
             item {
                 Card(
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = DiaperPeachContainer.copy(alpha = 0.65f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
-                        modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                        modifier = Modifier.padding(18.dp).fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Past 24h Wet", style = MaterialTheme.typography.labelSmall)
-                            Text("${summary.wetDiapersCount}", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
-                            Text("Target: 6+ / day", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("Past 24h Wet", style = MaterialTheme.typography.labelSmall, color = OnDiaperPeachContainer)
+                            Text("${summary.wetDiapersCount}", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold), color = DiaperPeach)
+                            Text("Target: 6+ / day", style = MaterialTheme.typography.labelSmall, color = OnDiaperPeachContainer.copy(alpha = 0.8f))
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Past 24h Dirty", style = MaterialTheme.typography.labelSmall)
-                            Text("${summary.dirtyDiapersCount}", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
-                            Text("Variable by feeding", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("Past 24h Dirty", style = MaterialTheme.typography.labelSmall, color = OnDiaperPeachContainer)
+                            Text("${summary.dirtyDiapersCount}", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold), color = DiaperPeach)
+                            Text("Variable by feeding", style = MaterialTheme.typography.labelSmall, color = OnDiaperPeachContainer.copy(alpha = 0.8f))
                         }
                     }
                 }
@@ -101,7 +104,12 @@ fun DiaperScreen(
                             selected = diaperType == type,
                             onClick = { diaperType = type },
                             label = { Text(label) },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = DiaperPeach,
+                                selectedLabelColor = androidx.compose.ui.graphics.Color.White
+                            )
                         )
                     }
                 }
@@ -125,7 +133,12 @@ fun DiaperScreen(
                             FilterChip(
                                 selected = consistency == c,
                                 onClick = { consistency = c },
-                                label = { Text(label, style = MaterialTheme.typography.labelSmall) }
+                                label = { Text(label, style = MaterialTheme.typography.labelSmall) },
+                                shape = RoundedCornerShape(10.dp),
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = DiaperPeach,
+                                    selectedLabelColor = androidx.compose.ui.graphics.Color.White
+                                )
                             )
                         }
                     }
@@ -142,7 +155,12 @@ fun DiaperScreen(
                             FilterChip(
                                 selected = stoolColor == color,
                                 onClick = { stoolColor = color },
-                                label = { Text(color, style = MaterialTheme.typography.labelSmall) }
+                                label = { Text(color, style = MaterialTheme.typography.labelSmall) },
+                                shape = RoundedCornerShape(10.dp),
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = DiaperPeach,
+                                    selectedLabelColor = androidx.compose.ui.graphics.Color.White
+                                )
                             )
                         }
                     }
@@ -157,7 +175,11 @@ fun DiaperScreen(
                         Text("Mucus or Blood Observation", style = MaterialTheme.typography.bodyMedium)
                         Switch(
                             checked = hasMucusOrBlood,
-                            onCheckedChange = { hasMucusOrBlood = it }
+                            onCheckedChange = { hasMucusOrBlood = it },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = androidx.compose.ui.graphics.Color.White,
+                                checkedTrackColor = DiaperPeach
+                            )
                         )
                     }
                 }
@@ -170,7 +192,7 @@ fun DiaperScreen(
                     onValueChange = { notes = it },
                     label = { Text("Observations & Notes (Optional)") },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
             }
 
@@ -192,16 +214,16 @@ fun DiaperScreen(
                     modifier = Modifier.fillMaxWidth().height(52.dp).testTag("save_diaper_button"),
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                        containerColor = DiaperPeach,
+                        contentColor = androidx.compose.ui.graphics.Color.White
                     )
                 ) {
-                    Text("Save Diaper Entry", style = MaterialTheme.typography.titleSmall)
+                    Text("Save Diaper Entry", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
                 }
 
                 if (savedMessage) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("✓ Diaper entry logged to history.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                    Text("✓ Diaper entry logged to history.", style = MaterialTheme.typography.bodySmall, color = DiaperPeach)
                 }
             }
         }

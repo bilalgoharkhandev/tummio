@@ -88,6 +88,9 @@ fun FeedingScreen(
 
 @Composable
 private fun BottleFeedingView(viewModel: MainViewModel) {
+    val activeBaby by viewModel.activeBaby.collectAsState()
+    val comparison by viewModel.guidelineComparison.collectAsState()
+
     var feedingType by remember { mutableStateOf(FeedingType.FORMULA) }
     var preparedMl by remember { mutableDoubleStateOf(120.0) }
     var remainingMl by remember { mutableDoubleStateOf(0.0) }
@@ -105,6 +108,46 @@ private fun BottleFeedingView(viewModel: MainViewModel) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // Daily Intake Guideline Banner based on Weight & Age
+        if (comparison?.weightKgUsed != null) {
+            item {
+                Surface(
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Icon(
+                            Icons.Outlined.Info,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Column {
+                            Text(
+                                text = "Guideline for ${activeBaby?.name ?: "Baby"} (${comparison!!.weightKgUsed} kg • ${comparison!!.selectedGuidelineName}):",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            val lower = comparison!!.referenceRangeLowerMl.roundToInt()
+                            val upper = comparison!!.referenceRangeUpperMl.roundToInt()
+                            val perFeedLower = (lower / 8.0).roundToInt()
+                            val perFeedUpper = (upper / 8.0).roundToInt()
+                            Text(
+                                text = "$lower–$upper mL/day • ~$perFeedLower–$perFeedUpper mL/feed (~8 feeds/day)",
+                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
         // Milk Type Selector
         item {
             Text(

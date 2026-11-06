@@ -21,6 +21,9 @@ import com.example.ui.MainViewModel
 import com.example.ui.components.ChartType
 import com.example.ui.components.RechartsGrowthChartCard
 import com.example.ui.components.WhoGrowthChart
+import com.example.ui.theme.GrowthMint
+import com.example.ui.theme.GrowthMintContainer
+import com.example.ui.theme.OnGrowthMintContainer
 import com.example.who.WhoGrowthCalculator
 import java.text.SimpleDateFormat
 import java.util.*
@@ -54,9 +57,10 @@ fun GrowthScreen(
             ExtendedFloatingActionButton(
                 onClick = { showAddDialog = true },
                 icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                text = { Text("Log Measurement") },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
+                text = { Text("Log Measurement", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)) },
+                containerColor = GrowthMint,
+                contentColor = androidx.compose.ui.graphics.Color.White,
+                shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.testTag("fab_log_growth")
             )
         }
@@ -97,15 +101,15 @@ fun GrowthScreen(
 
                     if (velocity != null) {
                         Card(
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(containerColor = GrowthMintContainer.copy(alpha = 0.65f)),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
+                            Column(modifier = Modifier.padding(18.dp)) {
                                 Text(
                                     "Growth Velocity (Last ${velocity.daysBetween} Days)",
-                                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = OnGrowthMintContainer
                                 )
                                 Spacer(modifier = Modifier.height(10.dp))
                                 Row(
@@ -113,24 +117,27 @@ fun GrowthScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Column {
-                                        Text("Weight Gain", style = MaterialTheme.typography.labelSmall)
+                                        Text("Weight Gain", style = MaterialTheme.typography.labelSmall, color = OnGrowthMintContainer)
                                         Text(
                                             "${if (velocity.weightGainGrams >= 0) "+" else ""}${"%.0f".format(velocity.weightGainGrams)} g",
-                                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                            color = GrowthMint
                                         )
                                     }
                                     Column {
-                                        Text("Daily Average", style = MaterialTheme.typography.labelSmall)
+                                        Text("Daily Average", style = MaterialTheme.typography.labelSmall, color = OnGrowthMintContainer)
                                         Text(
                                             "${"%.1f".format(velocity.gramsPerDay)} g/day",
-                                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                            color = GrowthMint
                                         )
                                     }
                                     Column {
-                                        Text("Weekly Average", style = MaterialTheme.typography.labelSmall)
+                                        Text("Weekly Average", style = MaterialTheme.typography.labelSmall, color = OnGrowthMintContainer)
                                         Text(
                                             "${"%.0f".format(velocity.gramsPerWeek)} g/week",
-                                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                            color = GrowthMint
                                         )
                                     }
                                 }
@@ -199,7 +206,7 @@ fun GrowthScreen(
                                 Text(
                                     text = "~${assessment.percentile.roundToInt()}th %ile",
                                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = GrowthMint
                                 )
                                 Text(
                                     text = "Z: ${"%.2f".format(assessment.zScore)}",
