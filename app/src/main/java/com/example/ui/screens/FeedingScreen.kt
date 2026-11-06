@@ -27,7 +27,7 @@ import com.example.ui.MainViewModel
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun FeedingScreen(
     viewModel: MainViewModel,
@@ -225,9 +225,10 @@ private fun BottleFeedingView(viewModel: MainViewModel) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(6.dp))
-                    Row(
+                    FlowRow(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         presets.forEach { preset ->
                             SuggestionChip(
