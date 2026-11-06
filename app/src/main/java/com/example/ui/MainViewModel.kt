@@ -499,6 +499,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             )
             val newId = repository.insertBaby(baby)
             preferences.setSelectedBabyId(newId)
+            SmartReminderManager.saveRule(getApplication(), baby.copy(id = newId), ReminderKind.FEED,
+                com.example.reminder.ReminderRule(enabled = true, intervalMinutes = reminderInterval))
         }
     }
 
