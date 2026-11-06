@@ -83,7 +83,7 @@ fun FormulaScreen(
                         }
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            "Calculate exact level scoops based on manufacturer instructions (Standard: 1 level scoop per 30 mL water).",
+                            "Calculate only from the preparation ratio on your selected formula's actual label. Never assume a universal scoop size.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -105,14 +105,19 @@ fun FormulaScreen(
 
                             val water = prepWaterMlText.toDoubleOrNull() ?: 0.0
                             val activeProduct = formulas.firstOrNull { it.isActive }
-                            val waterRatio = activeProduct?.waterQuantityPerUnitMl ?: 30.0
-                            val scoopsRatio = activeProduct?.scoopsPerUnit ?: 1.0
-                            val calculatedScoops = (water / waterRatio) * scoopsRatio
+                            val waterRatio = activeProduct?.waterQuantityPerUnitMl ?: 0.0
+                            val scoopsRatio = activeProduct?.scoopsPerUnit ?: 0.0
+                            val calculatedScoops = if (water > 0 && waterRatio > 0 && scoopsRatio > 0)
+                                (water / waterRatio) * scoopsRatio else null
+                            val displayScoops = calculatedScoops?.takeIf {
+                                kotlin.math.abs(it - kotlin.math.round(it)) < 0.00001
+                            }?.let { "${it.toInt()} level scoops" }
+                                ?: if (activeProduct == null) "Select a formula" else "Use full recipe units"
 
                             Surface(
                                 color = MaterialTheme.colorScheme.primaryContainer,
                                 shape = RoundedCornerShape(10.dp),
-                                modifier = Modifier.weight(1f).height(56.dp)
+                                modifier = Modifier.weight(1f).heightIn(min = 72.dp)
                             ) {
                                 Column(
                                     modifier = Modifier.fillMaxSize(),
@@ -120,7 +125,7 @@ fun FormulaScreen(
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Text(
-                                        text = "${"%.1f".format(calculatedScoops)} Level Scoops",
+                                        text = displayScoops,
                                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                                         color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )
@@ -261,7 +266,7 @@ fun FormulaScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column {
+                            Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = "${product.manufacturer} – ${product.productName}",
                                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
@@ -285,9 +290,9 @@ fun FormulaScreen(
                         }
 
                         Spacer(modifier = Modifier.height(10.dp))
-                        Row(
+                        Column(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Text(
                                 "Ratio: 1 scoop / ${product.waterQuantityPerUnitMl.roundToInt()} mL",

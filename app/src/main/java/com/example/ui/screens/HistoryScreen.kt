@@ -33,7 +33,7 @@ sealed class TimelineItem(val timestamp: Long, val original: Any) {
     class Symptom(val symptom: SymptomEntry) : TimelineItem(symptom.timestamp, symptom)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun HistoryScreen(
     viewModel: MainViewModel,
@@ -114,9 +114,10 @@ fun HistoryScreen(
                     singleLine = true
                 )
 
-                Row(
+                FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     listOf(
                         "ALL" to "All",
@@ -295,6 +296,7 @@ private fun TimelineCard(
                 ) {
                     Text(
                         text = title,
+                        modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
                         color = MaterialTheme.colorScheme.onSurface
                     )

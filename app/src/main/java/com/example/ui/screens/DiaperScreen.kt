@@ -21,7 +21,7 @@ import com.example.ui.theme.DiaperPeach
 import com.example.ui.theme.DiaperPeachContainer
 import com.example.ui.theme.OnDiaperPeachContainer
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun DiaperScreen(
     viewModel: MainViewModel,
@@ -123,7 +123,7 @@ fun DiaperScreen(
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    FlowRow(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         listOf(
                             StoolConsistency.SOFT to "Soft",
                             StoolConsistency.LOOSE to "Loose",

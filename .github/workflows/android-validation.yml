@@ -1,0 +1,39 @@
+name: Android validation
+on:
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'gradle/**'
+      - '*.gradle.kts'
+      - '.github/workflows/android-validation.yml'
+  workflow_dispatch:
+
+jobs:
+  assemble-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      # ubuntu-latest already includes an Android SDK. The setup-android action
+      # currently fails while requesting the removed legacy SDK 'tools' package.
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.3.1'
+      - name: Create CI-only debug keystore
+        run: |
+          keytool -genkeypair -v -keystore debug.keystore -alias androiddebugkey \
+            -storepass android -keypass android -keyalg RSA -keysize 2048 \
+            -validity 3650 -dname "CN=Android Debug,O=CI,C=US"
+      - name: Assemble and run JVM tests
+        run: gradle :app:assembleDebug :app:testDebugUnitTest --stacktrace
+      - name: Upload installable debug APK
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tummio-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: warn
+          retention-days: 7

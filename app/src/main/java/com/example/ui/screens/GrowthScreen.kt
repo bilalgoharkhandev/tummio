@@ -29,7 +29,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun GrowthScreen(
     viewModel: MainViewModel,
@@ -236,6 +236,7 @@ fun GrowthScreen(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun AddGrowthDialog(
     onDismiss: () -> Unit,
@@ -276,7 +277,8 @@ private fun AddGrowthDialog(
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth().testTag("input_head")
                 )
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     listOf("Home", "Clinic", "Pediatrician").forEach { s ->
                         FilterChip(
                             selected = source == s,

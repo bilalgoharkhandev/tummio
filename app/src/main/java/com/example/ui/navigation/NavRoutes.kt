@@ -8,6 +8,7 @@ object NavRoutes {
     const val INSIGHTS = "insights"
     const val PROFILE = "profile"
     const val SETTINGS = "settings"
+    const val SMART_REMINDERS = "smart_reminders"
     const val FORMULA = "formula"
     const val DIAPER = "diaper"
     const val SLEEP = "sleep"

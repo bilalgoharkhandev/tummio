@@ -9,6 +9,8 @@ import com.example.data.repository.PreferencesRepository
 import com.example.guidelines.FeedingGuidelineCalculator
 import com.example.guidelines.GuidelineComparison
 import com.example.reminder.FeedingReminderScheduler
+import com.example.reminder.ReminderKind
+import com.example.reminder.SmartReminderManager
 import com.example.who.GrowthAssessment
 import com.example.who.WhoGrowthCalculator
 import kotlinx.coroutines.Job
@@ -239,7 +241,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             )
             viewModelScope.launch {
                 repository.insertFeeding(feeding)
-                scheduleReminderAfterFeed(baby, feeding.timestamp)
+                scheduleReminderAfterFeed(baby, feeding.endTime ?: feeding.timestamp)
             }
         }
 
@@ -278,19 +280,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun scheduleReminderAfterFeed(baby: BabyProfile, feedTime: Long) {
-        val intervalMillis = TimeUnit.MINUTES.toMillis(baby.reminderIntervalMinutes.toLong())
-        val triggerTime = feedTime + intervalMillis
-        FeedingReminderScheduler.scheduleNextReminder(
-            context = getApplication(),
-            triggerTimestamp = triggerTime,
-            babyName = baby.name,
-            lastFeedTimestamp = feedTime
-        )
+        SmartReminderManager.onActivityLogged(getApplication(), baby, ReminderKind.FEED, feedTime)
     }
 
     fun snoozeReminder(minutes: Int) {
         val baby = activeBaby.value ?: return
-        FeedingReminderScheduler.snoozeReminder(getApplication(), minutes, baby.name)
+        SmartReminderManager.snooze(getApplication(), baby, ReminderKind.FEED, minutes)
     }
 
     fun logDiaper(
@@ -313,7 +308,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             hasMucusOrBlood = hasMucusOrBlood,
             notes = notes
         )
-        viewModelScope.launch { repository.insertDiaper(entry) }
+        viewModelScope.launch {
+            repository.insertDiaper(entry)
+            SmartReminderManager.onActivityLogged(getApplication(), baby, ReminderKind.DIAPER, timestamp)
+        }
     }
 
     fun logSleep(
@@ -332,7 +330,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             quality = quality,
             notes = notes
         )
-        viewModelScope.launch { repository.insertSleep(entry) }
+        viewModelScope.launch {
+            repository.insertSleep(entry)
+            SmartReminderManager.onActivityLogged(getApplication(), baby, ReminderKind.SLEEP, endTime)
+        }
     }
 
     fun logGrowth(
@@ -498,6 +499,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             )
             val newId = repository.insertBaby(baby)
             preferences.setSelectedBabyId(newId)
+            SmartReminderManager.saveRule(getApplication(), baby.copy(id = newId), ReminderKind.FEED,
+                com.example.reminder.ReminderRule(enabled = true, intervalMinutes = reminderInterval))
         }
     }
 
@@ -509,7 +512,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun updateBabyProfile(baby: BabyProfile) {
-        viewModelScope.launch { repository.updateBaby(baby) }
+        viewModelScope.launch {
+            repository.updateBaby(baby)
+            val existing = SmartReminderManager.getRule(getApplication(), baby.id, ReminderKind.FEED)
+            if (existing.enabled && existing.intervalMinutes != baby.reminderIntervalMinutes && existing.fixedTimes.isBlank()) {
+                SmartReminderManager.saveRule(getApplication(), baby, ReminderKind.FEED,
+                    existing.copy(intervalMinutes = baby.reminderIntervalMinutes))
+            }
+        }
     }
 
     fun deleteItem(item: Any) {

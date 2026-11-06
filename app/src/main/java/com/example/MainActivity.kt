@@ -4,6 +4,10 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.content.Intent
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import com.example.reminder.SmartReminderManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -31,10 +35,19 @@ import com.example.ui.screens.*
 import com.example.ui.theme.LittleRoutineTheme
 
 class MainActivity : ComponentActivity() {
+    private val pendingNavigation = mutableStateOf<String?>(null)
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        pendingNavigation.value = intent.getStringExtra("navigate_to")
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         NotificationHelper.createNotificationChannel(this)
+        pendingNavigation.value = intent.getStringExtra("navigate_to")
+        lifecycleScope.launch { SmartReminderManager.restoreAll(this@MainActivity) }
 
         setContent {
             val viewModel: MainViewModel = viewModel()
@@ -46,7 +59,7 @@ class MainActivity : ComponentActivity() {
             }
 
             LittleRoutineTheme(darkTheme = isDark, dynamicColor = false) {
-                LittleRoutineApp(viewModel)
+                LittleRoutineApp(viewModel, pendingNavigation.value) { pendingNavigation.value = null }
             }
         }
     }
@@ -60,7 +73,7 @@ data class BottomNavItem(
 )
 
 @Composable
-fun LittleRoutineApp(viewModel: MainViewModel) {
+fun LittleRoutineApp(viewModel: MainViewModel, requestedDestination: String?, onDestinationHandled: () -> Unit) {
     val context = LocalContext.current
     val allBabies by viewModel.allBabies.collectAsState()
 
@@ -79,6 +92,19 @@ fun LittleRoutineApp(viewModel: MainViewModel) {
             ) {
                 permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
+        }
+    }
+
+    LaunchedEffect(requestedDestination, allBabies.isNotEmpty()) {
+        if (requestedDestination != null && allBabies.isNotEmpty()) {
+            val allowed = setOf(NavRoutes.FEEDING, NavRoutes.SLEEP, NavRoutes.DIAPER)
+            if (requestedDestination in allowed) {
+                currentScreen = requestedDestination
+                screenStack.clear()
+                screenStack.add(NavRoutes.HOME)
+                screenStack.add(requestedDestination)
+            }
+            onDestinationHandled()
         }
     }
 
@@ -159,6 +185,7 @@ fun LittleRoutineApp(viewModel: MainViewModel) {
                                     contentDescription = item.label
                                 )
                             },
+                            alwaysShowLabel = false,
                             label = {
                                 Text(
                                     text = item.label,
@@ -209,6 +236,11 @@ fun LittleRoutineApp(viewModel: MainViewModel) {
                     onNavigateBack = { popBack() }
                 )
                 NavRoutes.SETTINGS -> SettingsScreen(
+                    viewModel = viewModel,
+                    onNavigateBack = { popBack() },
+                    onNavigateReminders = { navigateTo(NavRoutes.SMART_REMINDERS) }
+                )
+                NavRoutes.SMART_REMINDERS -> SmartReminderScreen(
                     viewModel = viewModel,
                     onNavigateBack = { popBack() }
                 )
