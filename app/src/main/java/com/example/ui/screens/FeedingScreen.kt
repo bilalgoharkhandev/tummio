@@ -86,6 +86,7 @@ fun FeedingScreen(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun BottleFeedingView(viewModel: MainViewModel) {
     val activeBaby by viewModel.activeBaby.collectAsState()
