@@ -20,7 +20,7 @@ import com.example.ui.theme.SleepSkyBlue
 import com.example.ui.theme.SleepSkyBlueContainer
 import java.util.concurrent.TimeUnit
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SleepScreen(
     viewModel: MainViewModel,
@@ -205,7 +205,7 @@ fun SleepScreen(
                             modifier = Modifier.fillMaxWidth()
                         )
 
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        FlowRow(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             listOf("Restful", "Fussy", "Interrupted").forEach { q ->
                                 FilterChip(
                                     selected = quality == q,
