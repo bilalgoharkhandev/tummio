@@ -129,7 +129,7 @@ fun ProfileScreen(
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
-                                        text = "Born ${dateFormatter.format(Date(baby.birthTimestamp))} • ${baby.sex.name} reference",
+                                        text = "Born ${dateFormatter.format(Date(baby.birthTimestamp))} • ${baby.sex.name.lowercase().replaceFirstChar { it.titlecase() }} reference",
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -277,21 +277,10 @@ fun AddBabyDialog(
                 }
 
                 item {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedTextField(
-                            value = weightText,
-                            onValueChange = { weightText = it },
-                            label = { Text("Birth Wt (kg)") },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(10.dp)
-                        )
-                        OutlinedTextField(
-                            value = lengthText,
-                            onValueChange = { lengthText = it },
-                            label = { Text("Birth Lg (cm)") },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(10.dp)
-                        )
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        OutlinedTextField(value = weightText, onValueChange = { weightText = it }, label = { Text("Birth weight (kg)") }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp))
+                        OutlinedTextField(value = lengthText, onValueChange = { lengthText = it }, label = { Text("Birth length (cm)") }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp))
+                        OutlinedTextField(value = headText, onValueChange = { headText = it }, label = { Text("Head circumference (cm)") }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp))
                     }
                 }
 
