@@ -26,6 +26,7 @@ import com.example.data.model.SexCategory
 import com.example.ui.MainViewModel
 import java.util.concurrent.TimeUnit
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun OnboardingScreen(
     viewModel: MainViewModel,
@@ -167,7 +168,7 @@ fun OnboardingScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(6.dp))
-                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            FlowRow(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                 listOf(
                                     FeedingMethod.FORMULA to "Formula",
                                     FeedingMethod.BREASTFEEDING to "Nursing",
@@ -189,7 +190,7 @@ fun OnboardingScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(6.dp))
-                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            FlowRow(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                 listOf(150 to "2.5h", 180 to "3h", 210 to "3.5h", 240 to "4h").forEach { (interval, label) ->
                                     FilterChip(
                                         selected = reminderInterval == interval,
