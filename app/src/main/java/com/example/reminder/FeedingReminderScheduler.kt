@@ -94,11 +94,11 @@ class FeedingReminderReceiver : BroadcastReceiver() {
                     } finally { pending.finish() }
                 }
             }
-            ACTION_FEEDING_REMINDER -> {
+            FeedingReminderScheduler.ACTION_FEEDING_REMINDER -> {
                 val name = intent.getStringExtra("baby_name") ?: "Baby"
                 NotificationHelper.showFeedingNotification(context, name, "a while", "previously")
             }
-            ACTION_SNOOZE_REMINDER -> {
+            FeedingReminderScheduler.ACTION_SNOOZE_REMINDER -> {
                 FeedingReminderScheduler.snoozeReminder(context,
                     intent.getIntExtra("snooze_minutes", 15),
                     intent.getStringExtra("baby_name") ?: "Baby")
