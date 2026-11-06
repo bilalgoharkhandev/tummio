@@ -154,11 +154,8 @@ fun HomeScreen(
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    // Feeding (Lavender)
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     PlayfulQuickButton(
                         icon = Icons.Outlined.LocalDrink,
                         label = "Bottle",
@@ -168,7 +165,6 @@ fun HomeScreen(
                         modifier = Modifier.weight(1f).testTag("quick_action_bottle"),
                         onClick = { onNavigate("feeding") }
                     )
-                    // Feeding Timer (Lavender)
                     PlayfulQuickButton(
                         icon = Icons.Outlined.Timer,
                         label = "Nursing",
@@ -178,7 +174,6 @@ fun HomeScreen(
                         modifier = Modifier.weight(1f).testTag("quick_action_nursing"),
                         onClick = { onNavigate("feeding") }
                     )
-                    // Diapers (Peach)
                     PlayfulQuickButton(
                         icon = Icons.Outlined.BabyChangingStation,
                         label = "Diaper",
@@ -188,7 +183,8 @@ fun HomeScreen(
                         modifier = Modifier.weight(1f).testTag("quick_action_diaper"),
                         onClick = { onNavigate("diaper") }
                     )
-                    // Sleep (Sky Blue)
+                    }
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     PlayfulQuickButton(
                         icon = Icons.Outlined.Bedtime,
                         label = "Sleep",
@@ -198,7 +194,6 @@ fun HomeScreen(
                         modifier = Modifier.weight(1f).testTag("quick_action_sleep"),
                         onClick = { onNavigate("sleep") }
                     )
-                    // Growth (Mint)
                     PlayfulQuickButton(
                         icon = Icons.Outlined.Straighten,
                         label = "Growth",
@@ -208,6 +203,7 @@ fun HomeScreen(
                         modifier = Modifier.weight(1f).testTag("quick_action_growth"),
                         onClick = { onNavigate("growth") }
                     )
+                    }
                 }
             }
 
@@ -528,7 +524,7 @@ private fun PlayfulQuickButton(
         shape = RoundedCornerShape(18.dp),
         color = containerColor,
         border = androidx.compose.foundation.BorderStroke(1.dp, iconColor.copy(alpha = 0.25f)),
-        modifier = modifier.height(72.dp)
+        modifier = modifier.heightIn(min = 84.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -544,7 +540,7 @@ private fun PlayfulQuickButton(
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                 color = contentColor
             )
         }
@@ -600,28 +596,16 @@ private fun DailyNutritionCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                NutritionColumn(
-                    title = "Measurable Bottle",
-                    value = "${summary.totalBottleIntakeMl.roundToInt()} mL",
-                    subtext = "${summary.bottleSessionsCount} feeds",
-                    badgeColor = LavenderPrimary
-                )
-                NutritionColumn(
-                    title = "Formula / EBM",
-                    value = "${summary.formulaConsumedMl.roundToInt()} / ${summary.ebmConsumedMl.roundToInt()} mL",
-                    subtext = "Intake split",
-                    badgeColor = LavenderSecondary
-                )
-                NutritionColumn(
-                    title = "Direct Nursing",
-                    value = "${summary.nursingTotalMinutes} mins",
-                    subtext = "${summary.nursingSessionsCount} sessions",
-                    badgeColor = PlayfulAccentPink
-                )
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                NutritionColumn("Measurable Bottle", "${summary.totalBottleIntakeMl.roundToInt()} mL",
+                    "${summary.bottleSessionsCount} feeds", LavenderPrimary)
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                NutritionColumn("Formula / EBM",
+                    "${summary.formulaConsumedMl.roundToInt()} / ${summary.ebmConsumedMl.roundToInt()} mL",
+                    "Intake split", LavenderSecondary)
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                NutritionColumn("Direct Nursing", "${summary.nursingTotalMinutes} mins",
+                    "${summary.nursingSessionsCount} sessions", PlayfulAccentPink)
             }
 
             // Required Intake based on Weight & Age
@@ -639,7 +623,7 @@ private fun DailyNutritionCard(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Target for ${comparison.weightKgUsed} kg (${comparison.selectedGuidelineName}):",
+                                text = "Reference for ${comparison.weightKgUsed} kg (${comparison.selectedGuidelineName}):",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = TextSecondary
                             )
@@ -652,7 +636,7 @@ private fun DailyNutritionCard(
                         }
                         SuggestionChip(
                             onClick = onViewDetails,
-                            label = { Text("Details ⓘ", style = MaterialTheme.typography.labelSmall) },
+                            label = { Text("Info", style = MaterialTheme.typography.labelMedium) },
                             colors = SuggestionChipDefaults.suggestionChipColors(
                                 containerColor = LavenderPastelSurface,
                                 labelColor = LavenderPrimary
@@ -667,9 +651,9 @@ private fun DailyNutritionCard(
                 Spacer(modifier = Modifier.height(12.dp))
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 Spacer(modifier = Modifier.height(10.dp))
-                Row(
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
                         text = "Avg bottle: ${summary.averageBottleMl.roundToInt()} mL",
@@ -691,11 +675,16 @@ private fun DailyNutritionCard(
 
 @Composable
 private fun NutritionColumn(title: String, value: String, subtext: String, badgeColor: Color) {
-    Column {
-        Text(text = title, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Spacer(modifier = Modifier.height(3.dp))
-        Text(text = value, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = badgeColor)
-        Text(text = subtext, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = title, style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = subtext, style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Text(text = value, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            color = badgeColor)
     }
 }
 
