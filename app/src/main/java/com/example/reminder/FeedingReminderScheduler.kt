@@ -10,116 +10,98 @@ import com.example.data.db.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
 import java.util.concurrent.TimeUnit
 
+/** Backward compatible facade for existing navigation/VM call sites. */
 object FeedingReminderScheduler {
     const val ACTION_FEEDING_REMINDER = "com.example.ACTION_FEEDING_REMINDER"
     const val ACTION_SNOOZE_REMINDER = "com.example.ACTION_SNOOZE_REMINDER"
-    private const val REQUEST_CODE = 2001
 
-    fun scheduleNextReminder(
-        context: Context,
-        triggerTimestamp: Long,
-        babyName: String,
-        lastFeedTimestamp: Long
-    ) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
+    fun scheduleNextReminder(context: Context, triggerTimestamp: Long, babyName: String, lastFeedTimestamp: Long) {
+        // Legacy scheduling retained only for old entry points. New sessions use SmartReminderManager.
         val intent = Intent(context, FeedingReminderReceiver::class.java).apply {
             action = ACTION_FEEDING_REMINDER
             putExtra("baby_name", babyName)
             putExtra("last_feed_time", lastFeedTimestamp)
         }
-
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            REQUEST_CODE,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
+        val pending = PendingIntent.getBroadcast(context, 2001, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val manager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    triggerTimestamp,
-                    pendingIntent
-                )
-            } else {
-                alarmManager.set(
-                    AlarmManager.RTC_WAKEUP,
-                    triggerTimestamp,
-                    pendingIntent
-                )
-            }
-        } catch (e: SecurityException) {
-            // Fallback for exact alarm permission constraints
-            alarmManager.set(
-                AlarmManager.RTC_WAKEUP,
-                triggerTimestamp,
-                pendingIntent
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !manager.canScheduleExactAlarms()) {
+                manager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTimestamp, pending)
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTimestamp, pending)
+            } else manager.setExact(AlarmManager.RTC_WAKEUP, triggerTimestamp, pending)
+        } catch (_: SecurityException) {
+            manager.set(AlarmManager.RTC_WAKEUP, triggerTimestamp, pending)
         }
     }
 
     fun snoozeReminder(context: Context, snoozeMinutes: Int, babyName: String) {
-        val snoozeTime = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(snoozeMinutes.toLong())
-        scheduleNextReminder(context, snoozeTime, babyName, System.currentTimeMillis() - TimeUnit.HOURS.toMillis(3))
+        scheduleNextReminder(context,
+            System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(snoozeMinutes.toLong()),
+            babyName, System.currentTimeMillis())
         NotificationHelper.cancelNotification(context)
     }
 
     fun cancelReminder(context: Context) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, FeedingReminderReceiver::class.java).apply {
-            action = ACTION_FEEDING_REMINDER
-        }
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            REQUEST_CODE,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        alarmManager.cancel(pendingIntent)
+        val intent = Intent(context, FeedingReminderReceiver::class.java).apply { action = ACTION_FEEDING_REMINDER }
+        val pending = PendingIntent.getBroadcast(context, 2001, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        (context.getSystemService(Context.ALARM_SERVICE) as AlarmManager).cancel(pending)
     }
 }
 
 class FeedingReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            FeedingReminderScheduler.ACTION_FEEDING_REMINDER -> {
-                val babyName = intent.getStringExtra("baby_name") ?: "Baby"
-                val lastFeedTime = intent.getLongExtra("last_feed_time", System.currentTimeMillis() - TimeUnit.HOURS.toMillis(3))
-
-                val elapsedMillis = System.currentTimeMillis() - lastFeedTime
-                val elapsedHours = TimeUnit.MILLISECONDS.toHours(elapsedMillis)
-                val elapsedMins = TimeUnit.MILLISECONDS.toMinutes(elapsedMillis) % 60
-                val elapsedStr = if (elapsedHours > 0) "${elapsedHours}h ${elapsedMins}m" else "${elapsedMins}m"
-
-                val timeFormatter = SimpleDateFormat("h:mm a", Locale.getDefault())
-                val lastTimeStr = timeFormatter.format(Date(lastFeedTime))
-
-                NotificationHelper.showFeedingNotification(
-                    context = context,
-                    babyName = babyName,
-                    elapsedTimeString = elapsedStr,
-                    lastFeedTimeString = lastTimeStr
+            SmartReminderManager.ACTION_FIRE -> {
+                val babyId = intent.getLongExtra(SmartReminderManager.EXTRA_BABY_ID, -1L)
+                val kind = runCatching {
+                    ReminderKind.valueOf(intent.getStringExtra(SmartReminderManager.EXTRA_KIND).orEmpty())
+                }.getOrNull() ?: return
+                if (babyId < 0) return
+                SmartReminderManager.onAlarm(
+                    context, babyId, kind,
+                    intent.getLongExtra(SmartReminderManager.EXTRA_DUE, -1L),
+                    intent.getStringExtra("baby_name") ?: "Baby"
                 )
             }
-            FeedingReminderScheduler.ACTION_SNOOZE_REMINDER -> {
-                val snoozeMinutes = intent.getIntExtra("snooze_minutes", 15)
-                val babyName = intent.getStringExtra("baby_name") ?: "Baby"
-                FeedingReminderScheduler.snoozeReminder(context, snoozeMinutes, babyName)
-            }
-            Intent.ACTION_BOOT_COMPLETED -> {
-                // Re-evaluate pending reminder from database after reboot
+            SmartReminderManager.ACTION_SNOOZE -> {
+                val babyId = intent.getLongExtra(SmartReminderManager.EXTRA_BABY_ID, -1L)
+                val kind = runCatching {
+                    ReminderKind.valueOf(intent.getStringExtra(SmartReminderManager.EXTRA_KIND).orEmpty())
+                }.getOrNull() ?: return
+                if (babyId < 0) return
+                val pending = goAsync()
                 CoroutineScope(Dispatchers.IO).launch {
-                    val db = AppDatabase.getDatabase(context)
-                    val defaultBaby = db.babyDao().getAllBabies()
-                    // Notification helper re-init
-                    NotificationHelper.createNotificationChannel(context)
+                    try {
+                        val baby = AppDatabase.getDatabase(context).babyDao().getBabyById(babyId)
+                        if (baby != null) SmartReminderManager.snooze(
+                            context, baby, kind,
+                            intent.getIntExtra(SmartReminderManager.EXTRA_SNOOZE, 15))
+                    } finally { pending.finish() }
                 }
+            }
+            Intent.ACTION_BOOT_COMPLETED, Intent.ACTION_TIME_CHANGED,
+            Intent.ACTION_TIMEZONE_CHANGED, "android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" -> {
+                val pending = goAsync()
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        NotificationHelper.createNotificationChannel(context)
+                        SmartReminderManager.restoreAll(context)
+                    } finally { pending.finish() }
+                }
+            }
+            ACTION_FEEDING_REMINDER -> {
+                val name = intent.getStringExtra("baby_name") ?: "Baby"
+                NotificationHelper.showFeedingNotification(context, name, "a while", "previously")
+            }
+            ACTION_SNOOZE_REMINDER -> {
+                FeedingReminderScheduler.snoozeReminder(context,
+                    intent.getIntExtra("snooze_minutes", 15),
+                    intent.getStringExtra("baby_name") ?: "Baby")
             }
         }
     }
