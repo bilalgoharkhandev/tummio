@@ -21,7 +21,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import com.example.reminder.ReminderKind
+import com.example.reminder.SmartReminderManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -51,6 +54,8 @@ fun HomeScreen(
     val latestWhoAssessment by viewModel.latestWhoAssessment.collectAsState()
     val guidelineComparison by viewModel.guidelineComparison.collectAsState()
     val nowTicker by viewModel.currentTicker.collectAsState()
+    val context = LocalContext.current
+    val feedReminder = activeBaby?.let { SmartReminderManager.getRule(context, it.id, ReminderKind.FEED) }
     val dateFormatter = remember { SimpleDateFormat("MMM d", Locale.getDefault()) }
 
     Scaffold(
@@ -67,7 +72,7 @@ fun HomeScreen(
                     ) {
                         // Baby avatar from attachment
                         Image(
-                            painter = painterResource(R.drawable.app_hero_avatar),
+                            painter = painterResource(R.drawable.tummio_icon),
                             contentDescription = "Baby Profile",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -139,7 +144,9 @@ fun HomeScreen(
                     lastFeedTime = lastFeed?.timestamp,
                     lastFeedAmount = lastFeed?.consumedMl,
                     lastFeedType = lastFeed?.type,
-                    intervalMinutes = activeBaby?.reminderIntervalMinutes ?: 180,
+                    intervalMinutes = feedReminder?.intervalMinutes ?: activeBaby?.reminderIntervalMinutes ?: 180,
+                    reminderEnabled = feedReminder?.enabled ?: false,
+                    reminderDueAt = feedReminder?.nextDueAt ?: 0L,
                     currentTime = nowTicker,
                     onLogFeed = { onNavigate("feeding") },
                     onSnooze = { viewModel.snoozeReminder(15) }
@@ -364,16 +371,18 @@ private fun NextFeedingCard(
     lastFeedAmount: Double?,
     lastFeedType: FeedingType?,
     intervalMinutes: Int,
+    reminderEnabled: Boolean,
+    reminderDueAt: Long,
     currentTime: Long,
     onLogFeed: () -> Unit,
     onSnooze: () -> Unit
 ) {
     val intervalMillis = TimeUnit.MINUTES.toMillis(intervalMinutes.toLong())
-    val nextFeedTimestamp = (lastFeedTime ?: (currentTime - TimeUnit.HOURS.toMillis(3))) + intervalMillis
-    val diffMillis = nextFeedTimestamp - currentTime
+    val nextFeedTimestamp = if (reminderEnabled) reminderDueAt.takeIf { it > 0 } ?: (lastFeedTime?.plus(intervalMillis) ?: 0L) else 0L
+    val diffMillis = if (nextFeedTimestamp > 0L) nextFeedTimestamp - currentTime else 0L
     val elapsedSinceLastMillis = if (lastFeedTime != null) currentTime - lastFeedTime else 0L
 
-    val isOverdue = diffMillis <= 0
+    val isOverdue = nextFeedTimestamp > 0 && diffMillis <= 0
     val timeFormatter = remember { SimpleDateFormat("h:mm a", Locale.getDefault()) }
 
     // Soft Lavender to Lilac gradient
@@ -428,7 +437,7 @@ private fun NextFeedingCard(
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(
-                            text = timeFormatter.format(Date(nextFeedTimestamp)),
+                            text = if (nextFeedTimestamp > 0) timeFormatter.format(Date(nextFeedTimestamp)) else "Not scheduled",
                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                             color = Color.White,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -438,7 +447,9 @@ private fun NextFeedingCard(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                val countdownText = if (isOverdue) {
+                val countdownText = if (nextFeedTimestamp == 0L) {
+                    "Schedule a reminder"
+                } else if (isOverdue) {
                     val overdueMins = TimeUnit.MILLISECONDS.toMinutes(-diffMillis)
                     if (overdueMins > 60) "Due (${overdueMins / 60}h ${overdueMins % 60}m ago)" else "Due (${overdueMins}m ago)"
                 } else {
@@ -449,7 +460,7 @@ private fun NextFeedingCard(
 
                 Text(
                     text = countdownText,
-                    style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.ExtraBold),
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
                     color = Color.White
                 )
 
@@ -485,7 +496,7 @@ private fun NextFeedingCard(
                             contentColor = LavenderPrimary
                         ),
                         shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.weight(1f).height(46.dp).testTag("home_button_record_feed")
+                        modifier = Modifier.weight(1f).heightIn(min = 48.dp).testTag("home_button_record_feed")
                     ) {
                         Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
@@ -499,9 +510,10 @@ private fun NextFeedingCard(
                         ),
                         border = androidx.compose.foundation.BorderStroke(1.5.dp, Color.White.copy(alpha = 0.5f)),
                         shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.height(46.dp).testTag("home_button_snooze")
+                        modifier = Modifier.heightIn(min = 48.dp).testTag("home_button_snooze"),
+                        enabled = reminderEnabled
                     ) {
-                        Text("+15m Snooze", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold))
+                        Text("Snooze 15m", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold))
                     }
                 }
             }
