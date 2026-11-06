@@ -1,0 +1,20 @@
+{
+  "source": "World Health Organization Child Growth Standards",
+  "study": "WHO Multicentre Growth Reference Study (MGRS)",
+  "version": "2006",
+  "applicable_age_range": "Birth to 60 months (0 to 5 years)",
+  "official_urls": [
+    "https://www.who.int/tools/child-growth-standards/standards/weight-for-age",
+    "https://www.who.int/tools/child-growth-standards/standards/length-height-for-age",
+    "https://www.who.int/tools/child-growth-standards/standards/head-circumference-for-age",
+    "https://www.who.int/tools/child-growth-standards/standards/weight-for-length-height"
+  ],
+  "methodology": "Box-Cox power exponential LMS method. Z = ((X/M)^L - 1)/(L*S) if L != 0, else ln(X/M)/S.",
+  "sex_categories": ["BOYS", "GIRLS"],
+  "indicators": [
+    "weight_for_age",
+    "length_for_age",
+    "head_circumference_for_age",
+    "weight_for_length"
+  ]
+}

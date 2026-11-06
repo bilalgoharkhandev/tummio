@@ -1,0 +1,6 @@
+{
+  "name": "LittleRoutine",
+  "description": "Baby Feeding & Growth Tracker with authentic WHO standards, bottle and nursing timers, formula management, and smart reminders.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

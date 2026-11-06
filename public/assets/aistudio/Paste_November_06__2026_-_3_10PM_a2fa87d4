@@ -1,0 +1,1171 @@
+# BUILD A COMPLETE PREMIUM ANDROID BABY FEEDING & GROWTH TRACKER
+
+You are a senior Android engineer, UI/UX designer, software architect, and health-data application developer.
+
+Build a fully functional, beautiful, premium-quality, native Android application called **LittleRoutine – Baby Feeding & Growth**.
+
+This must be a real working Android application, not a UI mockup, website, or conceptual prototype.
+
+The app will help parents track their baby's feeding, formula intake, breastfeeding, pumping, diaper changes, sleep, and physical growth. Its main distinguishing feature is the integration of authentic WHO Child Growth Standards and feeding guidance from reputable international pediatric organizations, enabling personalized comparisons based on the baby's age, sex, weight, and recorded routine.
+
+The overall experience should feel exceptionally polished, easy to operate, modern, fast, and intuitive.
+
+## 1. TECHNOLOGY AND ARCHITECTURE
+
+Build as a native Android application using:
+
+- Kotlin.
+- Jetpack Compose and Material 3.
+- MVVM architecture with ViewModels and StateFlow.
+- Room database for structured persistent local data.
+- DataStore for settings.
+- Navigation Compose.
+- Android AlarmManager for appropriately scheduled feeding alarms, with supported fallback behavior.
+- WorkManager for suitable deferrable background work.
+- Native Android notification channels and actions.
+- A reliable Compose-compatible charting implementation.
+- Android's Storage Access Framework for backups and exports.
+
+Requirements:
+
+1. Offline-first: all core tracking, charts, calculations, and reminders must work without an internet connection.
+2. No login required.
+3. No subscription or advertising.
+4. Persist all data after application restarts, phone reboots, and app updates.
+5. Use proper Android lifecycle management.
+6. Use modular, maintainable Kotlin files and reusable UI components.
+7. Do not hardcode fake user records.
+8. Do not substitute a web app for a native Android app.
+9. If a requested capability cannot be implemented in the environment, explicitly identify it instead of presenting a nonfunctional control.
+
+Design the architecture so optional cloud synchronization can be added later, but do not make Firebase a dependency for the initial working release.
+
+## 2. PREMIUM USER INTERFACE
+
+Design an original, elegant baby-care interface, not a generic admin dashboard.
+
+Visual direction:
+
+- Soft warm-white backgrounds.
+- Lavender and muted purple primary accents.
+- Pastel mint, sky blue, and peach secondary accents.
+- Elegant typography and excellent readability.
+- Smooth rounded cards and refined spacing.
+- Beautiful custom icons with consistent styling.
+- Subtle gradients used selectively.
+- Natural shadows and gentle animations.
+- Large touch targets for one-handed operation.
+- Proper dark mode, especially for nighttime feeds.
+- Professional graphs and data visualizations.
+- Polished empty states, loading states, and success animations.
+
+Avoid overly childish illustrations, clutter, excessive colors, and unnecessary decorative elements.
+
+Implement Android edge-to-edge layouts with correct status bar, navigation bar, and keyboard insets.
+
+Use a bottom navigation system containing:
+
+1. Home
+2. Feeding
+3. Growth
+4. History
+5. Insights
+
+Provide access to Settings and Baby Profile from the top app bar.
+
+Every screen must be complete and functional.
+
+## 3. BABY PROFILE AND ONBOARDING
+
+On first launch, create an attractive onboarding flow.
+
+Collect:
+
+- Baby's name.
+- Date and optional time of birth.
+- Sex category required for selecting WHO boys' or girls' reference charts.
+- Profile picture (optional).
+- Birth weight in kg or grams.
+- Birth recumbent length in cm (optional).
+- Birth head circumference in cm (optional).
+- Gestational age at delivery in weeks and days (optional).
+- Current weight and measurement date (optional).
+- Current height/length and measurement date (optional).
+- Current head circumference and measurement date (optional).
+- Primary feeding method: formula, breastfeeding, expressed breast milk, or mixed feeding.
+- Preferred feeding reminder interval.
+- Preferred measurement units.
+- Time zone from the device.
+- Preferred language, initially English with architecture for future Urdu localization.
+
+Allow editing every detail later.
+
+Display baby's exact age in months, weeks, and days. For clinical calculations, preserve the precise age in days.
+
+Support multiple baby profiles, with completely separate records and reminders for each.
+
+For premature babies, support corrected-age information with transparent calculation and limitations. Do not assume ordinary WHO chronological-age interpretation is appropriate without considering prematurity.
+
+## 4. HOME DASHBOARD
+
+Create a visually impressive, practical dashboard that immediately answers:
+
+- When was the baby last fed?
+- How much milk was consumed?
+- When is the next planned feeding?
+- How much known milk intake has been recorded today?
+- How is the baby's recent growth progressing?
+
+Dashboard sections:
+
+### A. Baby information header
+
+Show baby's name, photograph or avatar, and exact age.
+
+### B. Next feeding card
+
+Large prominent card showing:
+
+- Next planned feeding time.
+- Live countdown.
+- Time since last feeding.
+- Last consumed quantity.
+- Feeding type.
+- Snooze action.
+- Reschedule action.
+
+### C. Quick feeding controls
+
+Prominent buttons:
+
+- Record formula feeding.
+- Record expressed breast milk.
+- Start breastfeeding timer.
+- Start feeding timer.
+- Record diaper.
+
+### D. Daily milk summary
+
+Show:
+
+- Total consumed formula in mL.
+- Total expressed breast milk consumed in mL.
+- Total measurable bottle intake.
+- Number of bottle-feeding sessions.
+- Number and duration of direct breastfeeding sessions.
+- Average quantity per bottle feed.
+- Time between feedings.
+
+### E. Growth snapshot
+
+Show most recent:
+
+- Weight.
+- Recumbent length/height.
+- Head circumference.
+- WHO percentile when valid reference data are available.
+- Measurement date.
+
+### F. Quick insights
+
+Show short, genuinely data-derived observations, such as:
+
+"Average bottle intake over the last 7 days: 105 mL."
+
+"Today's recorded intake is 8% below your recent daily average."
+
+Never interpret these comparisons as medical diagnoses.
+
+## 5. COMPREHENSIVE FEEDING TRACKER
+
+Support the following feeding types:
+
+1. Formula bottle.
+2. Expressed breast milk bottle.
+3. Direct breastfeeding.
+4. Mixed bottle feeding.
+5. Combination feeding routines.
+
+### Bottle feeding entry
+
+Allow parents to record:
+
+- Feeding date.
+- Start time.
+- End time or duration.
+- Milk type.
+- Formula brand/product if applicable.
+- Quantity prepared in mL.
+- Quantity actually consumed in mL.
+- Quantity remaining/wasted in mL.
+- Feeding notes.
+- Caregiver name (optional).
+
+Calculate:
+
+Consumed = prepared minus remaining.
+
+Always use the actual consumed amount for intake calculations.
+
+Do not include wasted milk in intake totals.
+
+Provide quick quantity buttons such as:
+
+30 mL, 60 mL, 90 mL, 120 mL, 150 mL, 180 mL.
+
+Allow users to customize those presets.
+
+Support manual backdated entries and editing or deleting records.
+
+### Live feeding timer
+
+Provide a large, elegant stopwatch interface with:
+
+- Start.
+- Pause.
+- Resume.
+- Finish.
+- Elapsed time.
+- Screen-lock-safe tracking using timestamps.
+
+Save completed sessions to the timeline.
+
+### Breastfeeding
+
+Implement separate left- and right-breast timers.
+
+Track:
+
+- Which breast was used.
+- Time spent on each breast.
+- Total nursing duration.
+- Last breast used.
+- Notes about the session.
+
+Important: breastfeeding duration is not a reliable measurement of consumed milk. Never convert nursing minutes into an invented mL intake.
+
+### Pumping
+
+Record:
+
+- Pumping date and time.
+- Left breast output.
+- Right breast output.
+- Total expressed milk.
+- Pumping duration.
+- Optional storage destination.
+
+Track expressed milk inventory separately from actual feeding intake.
+
+## 6. SMART FEEDING REMINDERS
+
+Implement a fully functional reminder engine.
+
+Features:
+
+- Configurable intervals in hours and minutes.
+- Reminders based on the last completed feed.
+- Optional fixed feeding schedules.
+- Automatic adjustment after a newly logged feed.
+- Optional day/night scheduling preferences.
+- Snooze reminders by 5, 10, 15, or 30 minutes.
+- Missed-reminder indicators.
+- Full notification actions.
+- Notification sounds and vibration settings.
+- Persistent countdown when appropriate.
+- Multiple-baby support.
+
+Notification example:
+
+"Time to feed Adam. Last feeding: 11:30 AM. Time elapsed: 3 hours."
+
+Actions:
+
+- Record feeding.
+- Snooze.
+- Open feeding screen.
+
+Ensure that notifications do not silently create feeding entries.
+
+Handle Android notification permissions, battery restrictions, Doze behavior, reboot scheduling, and exact-alarm permission restrictions properly.
+
+If precise alarm delivery cannot be guaranteed, explain that limitation in Settings.
+
+Never make the app assume every baby medically requires a fixed feeding interval. Reminders are caregiver-configured scheduling aids and must not override hunger cues or a clinician's plan.
+
+## 7. FORMULA MANAGEMENT
+
+Create a dedicated Formula Management section.
+
+### Formula profiles
+
+Allow parents to add formula products manually, including:
+
+- Manufacturer.
+- Product name.
+- Stage.
+- Tin size.
+- Price in local currency.
+- Water quantity per preparation unit.
+- Number of manufacturer-provided scoops.
+- Scoop mass in grams when known.
+- Tin opening date.
+- Expiry date.
+
+Do not assume different brands use the same scoop size or mixing ratio.
+
+### Preparation calculator
+
+Calculate quantities only from the exact manufacturer instructions entered by the parent.
+
+For example, if the verified product instructions state one level scoop per 30 mL water, calculate preparation quantities only for valid supported increments.
+
+Display:
+
+- Water quantity.
+- Required number of level scoops.
+- Preparation instructions.
+- Safety information.
+
+Do not suggest arbitrary fractional scoops, extra dilution, or stronger formula concentrations.
+
+Water quantity and final prepared milk volume are not necessarily identical; do not conflate them.
+
+### Formula inventory
+
+Track:
+
+- Current open tin.
+- Estimated powder remaining.
+- Daily formula powder used.
+- Approximate days until replacement.
+- Cost per prepared bottle.
+- Daily and monthly formula expenses.
+- Formula switching history.
+
+### Bottle safety timer
+
+Allow logging preparation time, refrigeration, and feeding start.
+
+Implement CDC-based general guidance:
+
+- Use prepared formula within 2 hours of preparation if not refrigerated.
+- Once feeding begins, use within 1 hour.
+- If immediately refrigerated before feeding, use within 24 hours.
+- Discard remaining formula after feeding.
+
+Clearly label the guidance source and handle higher-risk infants and local preparation recommendations appropriately.
+
+Do not falsely show a bottle as safe when the relevant timing or storage conditions are unknown.
+
+## 8. INTERNATIONAL FEEDING GUIDELINES ENGINE
+
+This is one of the app's most important features.
+
+Build a dedicated module called:
+
+**Feeding Guidance & Comparison**
+
+Integrate verifiable guidance from:
+
+- World Health Organization (WHO).
+- UNICEF.
+- American Academy of Pediatrics (AAP).
+- UK National Health Service (NHS).
+- US Centers for Disease Control and Prevention (CDC).
+
+Every reference must display its organization, source document, applicable age range, and source link.
+
+Do not invent WHO feeding-volume tables. WHO growth standards and breastfeeding recommendations are not the same thing as weight-based formula intake estimates.
+
+### A. Daily formula intake estimate
+
+For eligible full-term, predominantly formula-fed babies, offer reference options.
+
+#### NHS reference
+
+Use the approximate guidance of:
+
+150–200 mL of formula per kg of body weight per 24 hours.
+
+This is an approximate reference primarily for babies after the first week through around six months, not a prescription for newborns in their first days or all older infants.
+
+Formula:
+
+Lower estimate = weight in kg × 150 mL.
+
+Upper estimate = weight in kg × 200 mL.
+
+Example:
+
+Baby weight = 4 kg.
+
+Approximate daily reference = 600–800 mL.
+
+Show the source, qualifying conditions, and that individual requirements vary.
+
+#### AAP reference
+
+Provide the AAP's approximate estimate of 2.5 US fluid ounces of formula per pound of body weight per day.
+
+Convert correctly to mL and display the AAP's general discussion of an average upper intake around 32 US fluid ounces (approximately 960 mL) per day.
+
+Treat that figure as general guidance requiring individual interpretation, not a rigid medical cutoff.
+
+Do not merge NHS and AAP estimates into a fabricated WHO recommendation.
+
+### B. Actual intake comparison
+
+Compute:
+
+- Known formula intake in the past rolling 24 hours.
+- Known expressed breast milk intake.
+- Combined known bottle intake.
+- Direct nursing sessions separately.
+- Formula intake per kg of current recorded body weight.
+- Average bottle volume.
+- Average bottle-feeding interval.
+- Last seven days of intake.
+
+Compare the appropriate recorded value against the selected guideline.
+
+Use neutral wording such as:
+
+"Recorded formula intake: 690 mL in the last 24 hours."
+
+"NHS approximate formula reference for the recorded weight: 600–800 mL/day."
+
+"Your record falls within this broad reference range."
+
+Never use absolute judgments such as "Your baby is perfectly fed" or "Your baby is unhealthy."
+
+For exclusively breastfed and mixed-fed infants with unmeasured nursing intake, clearly state that total milk consumption cannot be accurately calculated from the available records.
+
+Do not use formula-only estimates as a complete intake assessment for a breastfeeding baby.
+
+### C. Per-feeding estimate
+
+Provide an optional planning calculator:
+
+Estimated bottle volume per feed = selected daily planning amount divided by number of planned bottle feeds.
+
+Example:
+
+Planning amount = 720 mL/day.
+
+Planned bottle feeds = 8.
+
+Planning average = 90 mL per feed.
+
+Clearly label this as an arithmetic planning estimate, NOT an official WHO requirement or a forced bottle target.
+
+Let users enter a personalized daily intake target supplied by their pediatrician.
+
+### D. Age-aware guidance
+
+Provide appropriate informational guidance for:
+
+- First week of life.
+- 1 week to under 6 months.
+- 6 to 12 months.
+- 12 months onward.
+
+Adapt the comparisons accordingly.
+
+Do not apply the early-infancy weight-based formula calculation unchanged to children over six months after complementary foods become important.
+
+For babies with prematurity, low birth weight, illness, feeding problems, or prescribed feeding plans, suppress generic "on target" judgments and prioritize individualized clinician guidance.
+
+### E. Missing or outdated information
+
+If current weight is unavailable, explain why a weight-based calculation cannot be displayed.
+
+If weight data are old, show the measurement date and warn that the estimate may not reflect current needs.
+
+Never invent a weight or use a population median as though it were the baby's recorded weight.
+
+### F. Personalized guidance screen
+
+Display:
+
+- Baby's recorded age and weight.
+- Selected guidance source.
+- Approximate daily reference where applicable.
+- Actual recorded intake.
+- Difference from the reference.
+- Per-kg measured intake.
+- Recent feeding trends.
+- Notes explaining what the comparison can and cannot establish.
+
+Use visual range indicators but avoid displaying a red medical danger state for an isolated difference from a formula estimate.
+
+## 9. WHO CHILD GROWTH STANDARDS INTEGRATION
+
+This is a CRITICAL part of the project.
+
+Integrate authentic, published World Health Organization Child Growth Standards.
+
+Support the appropriate reference ranges for children from birth up to five years, using sex-specific WHO datasets.
+
+Required measurements:
+
+1. Weight-for-age.
+2. Recumbent length-for-age (younger children).
+3. Standing height-for-age (older children).
+4. Head circumference-for-age.
+5. Weight-for-length.
+6. Weight-for-height where appropriate.
+
+For the primary infant interface, prioritize the four WHO indicators commonly used from birth to two years: weight-for-age, length-for-age, head circumference-for-age, and weight-for-length.
+
+Do not make BMI-for-age the main growth assessment for children under two.
+
+### Authentic growth datasets
+
+Obtain actual WHO-published tabulations or verified WHO-derived LMS reference data.
+
+Recommended sources:
+
+https://www.who.int/tools/child-growth-standards/standards/weight-for-age
+
+https://www.who.int/toolkits/child-growth-standards/standards/length-height-for-age
+
+https://www.who.int/toolkits/child-growth-standards/standards/head-circumference-for-age
+
+https://www.who.int/toolkits/child-growth-standards/standards/weight-for-length-height
+
+Verified CDC-hosted WHO files for birth to 24 months:
+
+https://www.cdc.gov/growthcharts/who-data-files.htm
+
+Import the actual appropriate published datasets and bundle them as offline application assets.
+
+Keep dataset provenance, version, units, and source information.
+
+Never generate sample reference values and falsely label them as WHO data.
+
+If downloading or importing the verified data is blocked, implement the importer, data validation, and chart infrastructure, but clearly mark WHO percentile calculations as unavailable until the genuine data are installed.
+
+Do not substitute arbitrary curves.
+
+### WHO percentile calculations
+
+Calculate percentiles and Z-scores accurately from the published parameters.
+
+For an appropriate LMS dataset, use the standard LMS computation:
+
+When L is not zero:
+
+Z = ((X / M)^L - 1) / (L × S)
+
+When L equals zero:
+
+Z = ln(X / M) / S
+
+Where:
+
+- X is the recorded measurement.
+- L is the Box-Cox power.
+- M is the median.
+- S is the coefficient of variation.
+
+Convert Z-scores to percentiles using the standard normal cumulative distribution when appropriate.
+
+Respect the official dataset's exact age, measurement, interpolation, validity, and extreme-value handling rules. Do not assume all WHO reference formats can be interpreted identically.
+
+Use separate reference data for boys and girls.
+
+Preserve precision internally and round only for presentation.
+
+### WHO growth charts
+
+Create a separate interactive chart for every major growth indicator.
+
+Each chart must show:
+
+- Horizontal axis: age or length, as appropriate.
+- Vertical axis: measured value in correct units.
+- Genuine WHO percentile curves.
+- 50th percentile or median reference.
+- Other appropriately calculated reference percentiles such as 3rd, 15th, 85th, and 97th.
+- Recorded measurements as clearly visible points.
+- A line joining the baby's measurements over time.
+- Interactive data-point inspection.
+- Measurement dates and values.
+- Pinch-zoom or an equivalent accessible way to inspect data.
+- Full-screen chart option.
+
+Allow parents to switch between:
+
+- Percentile view.
+- Z-score view.
+- Measurement history.
+
+### Individual growth summaries
+
+For each recorded measurement, show:
+
+- Actual value.
+- Age at measurement.
+- Applicable WHO percentile.
+- Z-score.
+- Difference from the previous measurement.
+- Measurement trend.
+
+Example interface:
+
+Weight: 5.8 kg.
+
+WHO weight-for-age percentile: calculated from genuine dataset.
+
+Previous measurement: 5.4 kg.
+
+Change: +0.4 kg.
+
+Do not diagnose growth disorders from percentile placement alone.
+
+### Growth velocity
+
+Implement:
+
+- Weight gained between two valid measurement dates.
+- Average weight change per day over the observed period.
+- Average weight change per week.
+- Length increase over the measured interval.
+- Head circumference increase over the measured interval.
+
+These are descriptive calculations.
+
+Do not label a numerical weight-gain rate medically normal or abnormal without a verified age-appropriate reference and sufficient context.
+
+### Measurement quality
+
+Support:
+
+- Accurate age in days.
+- Measurement dates.
+- Birth measurements.
+- Recumbent length versus standing height.
+- Appropriate measurement-method adjustments only when supported by official methodology.
+- Prematurity and corrected-age considerations.
+- Validation against obvious data-entry errors.
+- Measurement source: home or clinic.
+- Notes.
+
+If an assessment lies outside the data's applicable limits, display a clear explanation instead of extrapolating.
+
+### Growth insights
+
+Provide useful non-diagnostic observations:
+
+- Weight has increased since the previous measurement.
+- The baby has followed a similar percentile trajectory.
+- Recent measurements suggest a change in trajectory that can be reviewed with a clinician.
+
+Do not determine health solely from one percentile.
+
+Avoid automatically diagnosing underweight, stunting, microcephaly, macrocephaly, obesity, or failure to thrive.
+
+Where applicable, show verified guidance about when further professional assessment may be appropriate.
+
+## 10. DIAPER AND STOOL TRACKER
+
+Create a quick diaper logging interface.
+
+Types:
+
+- Wet.
+- Dirty.
+- Both.
+- Dry.
+
+For dirty diapers, optionally record:
+
+- Stool color.
+- Consistency: watery, loose, soft, formed, hard, or pellet-like.
+- Approximate amount.
+- Mucus or blood observation.
+- Notes.
+
+Show:
+
+- Wet diaper count in the past 24 hours.
+- Dirty diaper count.
+- Stool consistency history.
+- Daily and weekly trends.
+- Relationship to formula changes.
+
+Include general educational information from an authoritative pediatric source.
+
+Do not diagnose constipation or dehydration solely from a single diaper record.
+
+## 11. SLEEP TRACKER
+
+Implement:
+
+- Start sleep.
+- Pause or finish sleep session.
+- Manual sleep entry.
+- Night sleep and naps.
+- Total sleep in 24 hours.
+- Average sleep duration.
+- Sleep timeline.
+- Sleep versus feeding timeline.
+
+Do not impose rigid sleep requirements or provide unsafe sleep advice.
+
+## 12. SYMPTOMS AND FEEDING REACTION JOURNAL
+
+Parents should be able to record:
+
+- Gas.
+- Spit-up.
+- Vomiting.
+- Fussiness.
+- Unusual crying.
+- Feeding refusal.
+- Hard stools.
+- Loose stools.
+- Skin observations.
+- Free-text symptoms.
+
+Allow observations to be associated with:
+
+- Date.
+- Feeding.
+- Formula brand.
+- Quantity consumed.
+- Caregiver notes.
+
+Present correlation and chronology, not unsupported claims about causes.
+
+Create a seven-day timeline comparing formula changes, feeding intake, and reported symptoms.
+
+Do not suggest allergy diagnoses or medical treatment based on these correlations.
+
+## 13. ANALYTICS AND INSIGHTS
+
+Create a sophisticated analytics dashboard with interactive charts.
+
+### Feeding analytics
+
+- Daily intake.
+- Weekly average.
+- Monthly trends.
+- Intake by milk type.
+- Feeding frequency.
+- Average bottle quantity.
+- Average interval between feeds.
+- Morning, afternoon, evening, and night patterns.
+- Known intake per kg of recorded weight.
+- Prepared versus actually consumed milk.
+- Formula wastage.
+
+### Growth analytics
+
+- Weight progression.
+- Length progression.
+- Head circumference progression.
+- WHO percentile trajectories.
+- Measurement-to-measurement changes.
+- Actual growth versus published WHO reference curves.
+
+### Cross-feature insights
+
+Compare:
+
+- Feeding versus diaper records.
+- Formula changes versus stool observations.
+- Feeding time versus sleep sessions.
+- Daily intake versus the individual's previous days.
+
+All observations must be based on recorded data.
+
+Avoid fabricated AI predictions. If predictions are implemented, use a transparent statistical approach and label them as estimates.
+
+Do not use a generative AI model to invent numerical growth standards, feeding targets, or medical diagnoses.
+
+## 14. FEEDING HISTORY AND CALENDAR
+
+Create a beautiful chronological timeline.
+
+Include:
+
+- Feeding events.
+- Nursing sessions.
+- Pumping sessions.
+- Diapers.
+- Sleep.
+- Growth measurements.
+- Symptoms.
+
+Features:
+
+- Calendar view.
+- Daily timeline.
+- Weekly summary.
+- Filters by activity type.
+- Search.
+- Edit and delete.
+- Date selection.
+- Backdated entries.
+- Clear time labels.
+
+Make the timeline easy to scan.
+
+Use different, consistent icons for different activity types.
+
+## 15. INTERNATIONAL CHILD HEALTH INFORMATION CENTER
+
+Create a dedicated educational section accessible from Insights and Settings.
+
+Organize information into:
+
+### Feeding
+- Responsive feeding.
+- Common hunger and fullness cues.
+- Breastfeeding and formula feeding.
+- Feeding frequency guidance.
+- Complementary feeding around six months.
+
+### Growth
+- Understanding growth percentiles.
+- Understanding WHO Z-scores.
+- Weight-for-age versus weight-for-length.
+- Why growth trends are more useful than isolated measurements.
+
+### Formula safety
+- Correct formula preparation.
+- Formula storage and discard times.
+- Handling leftover milk.
+
+### Development
+- Age-appropriate general child development information, only where reputable published references are available.
+
+Every educational item must show its source and a working reference link.
+
+Separate verified recommendations from optional caregiver preferences and planning estimates.
+
+## 16. NOTIFICATIONS AND ANDROID WIDGETS
+
+Create useful Android-specific experiences.
+
+### Notifications
+
+- Upcoming feeding reminder.
+- Feeding reminder due.
+- Snooze action.
+- Open quick-log action.
+- Optional bottle discard deadline.
+- Optional formula tin restocking reminder.
+
+### Home screen widget
+
+Display:
+
+- Baby name.
+- Time since last feeding.
+- Next planned feeding.
+- Today's known bottle intake.
+- Quick access to feeding entry.
+
+Support dark mode.
+
+Use Android-native capabilities, not an embedded web page.
+
+If the environment cannot build widgets fully, prioritize the core app and clearly flag the limitation.
+
+## 17. EXPORT, BACKUP, AND PRIVACY
+
+Provide:
+
+- Export feeding history to CSV.
+- Export growth measurements to CSV.
+- PDF pediatrician report.
+- Full local backup as JSON.
+- Restore from JSON.
+- Clear all data with confirmation.
+- Optional app privacy lock.
+
+The PDF report should include:
+
+- Baby profile and age.
+- Date range.
+- Feeding history summary.
+- Known intake breakdown.
+- Growth history.
+- Growth charts where supported.
+- WHO percentiles where validated.
+- Diaper and stool summary.
+- Formula changes.
+- Parent notes.
+- Reference source information.
+
+The report must clearly state that recorded feeding totals may be incomplete when direct breastfeeding is not measurable.
+
+Data should remain on the device unless the parent explicitly exports or shares it.
+
+No analytics tracking or advertising SDKs.
+
+Do not send health data to generative AI services by default.
+
+## 18. SETTINGS
+
+Create a comprehensive settings screen:
+
+- Baby profiles.
+- Units: mL/US fl oz, kg/lb, cm/inches.
+- Date and time display.
+- Feeding reminders.
+- Notification permissions.
+- Sound and vibration.
+- Light/dark/system theme.
+- Feeding presets.
+- Preferred formula.
+- NHS or AAP reference preference.
+- Clinician-specified intake plan.
+- Language preference.
+- Export.
+- Backup and restore.
+- Data deletion.
+- About.
+- Official medical references.
+- Privacy information.
+
+Use accurate unit conversion and consistent date formatting.
+
+## 19. DATA MODELS
+
+Design proper Room entities and relationships.
+
+At minimum:
+
+BabyProfile
+
+FeedingSession
+
+BottleFeed
+
+BreastfeedingSession
+
+PumpingSession
+
+ExpressedMilkBatch
+
+FormulaProduct
+
+FormulaInventory
+
+GrowthMeasurement
+
+DiaperEntry
+
+SleepSession
+
+SymptomEntry
+
+ReminderConfiguration
+
+Caregiver
+
+AppSettings
+
+GuidelineReference
+
+Use stable unique identifiers and timestamp fields.
+
+Store timestamps consistently and convert them to the user's selected or device-local time zone for display.
+
+Avoid duplicate feeds and incorrect daily totals.
+
+Support database migrations.
+
+Separate clinical reference data from user-entered data.
+
+Store dataset provenance and version information.
+
+## 20. CALCULATIONS AND DATA INTEGRITY
+
+Create dedicated tested calculation services for:
+
+1. Exact age in days.
+2. Corrected age when applicable.
+3. Rolling 24-hour intake.
+4. Calendar-day intake.
+5. Milk consumed versus prepared.
+6. Formula usage and wastage.
+7. mL/kg/day.
+8. NHS approximate daily formula reference.
+9. AAP approximate daily formula reference.
+10. Per-feed planning estimates.
+11. WHO percentile lookup.
+12. WHO Z-score calculations.
+13. Weight change and growth velocity.
+14. Average feeding intervals.
+15. Reminder scheduling.
+16. Formula bottle expiry timing.
+17. Date and time zone conversions.
+
+Use appropriate precision and rounding.
+
+Prevent division by zero, negative values, invalid dates, and measurements outside the supported growth-reference range.
+
+Never fill missing medical measurements using invented defaults.
+
+## 21. SAMPLE WORKFLOWS
+
+Fully implement and verify these scenarios.
+
+### Scenario A: Formula feeding
+
+A baby weighs 4 kg and is two months old.
+
+Parent records:
+
+- 9:00 AM: 90 mL.
+- 12:00 PM: 100 mL.
+- 3:00 PM: 80 mL.
+
+The app shows:
+
+- Known total consumed: 270 mL.
+- Three recorded feeds.
+- Average recorded bottle intake: 90 mL.
+- Correct feeding intervals.
+
+When the parent opens the guidance screen, the NHS reference for a 4 kg eligible infant shows approximately 600–800 mL over 24 hours.
+
+The app must not compare only the incomplete calendar-day amount to a full 24-hour reference without explaining the time window.
+
+### Scenario B: Mixed feeding
+
+Parent records:
+
+- 70 mL formula.
+- 40 mL expressed breast milk.
+- 15 minutes breastfeeding directly.
+
+The app shows:
+
+- Formula consumed: 70 mL.
+- Expressed breast milk consumed: 40 mL.
+- Known measurable intake: 110 mL.
+- Direct breastfeeding: 15 minutes.
+
+Do not assign a guessed milk volume to direct nursing.
+
+### Scenario C: Growth
+
+Parent enters:
+
+- Baby's birth date.
+- WHO chart sex reference.
+- Weight measurements on multiple dates.
+- Length measurements.
+- Head circumference measurements.
+
+The app must plot these against authentic WHO reference curves and calculate validated percentiles where reference data are available.
+
+### Scenario D: Reminder
+
+Parent chooses a three-hour interval.
+
+After a completed feed at 9:00 AM, the next planned reminder becomes 12:00 PM.
+
+If the parent logs an actual completed feeding at 11:30 AM, the app must follow the configured interval-reset behavior and reschedule consistently.
+
+### Scenario E: Formula preparation
+
+Parent records a prepared bottle and later records when feeding begins.
+
+The app calculates applicable discard deadlines from the correct timestamps and storage conditions.
+
+### Scenario F: Data persistence
+
+Parent closes and reopens the app.
+
+All baby profiles, feeding history, growth measurements, settings, and pending reminders must remain available.
+
+## 22. SAFETY AND PROFESSIONAL INTEGRITY
+
+This application is intended for tracking, education, and informed discussion with pediatric healthcare professionals.
+
+Do not present medical reference ranges as compulsory feeding targets.
+
+Do not recommend force-feeding, withholding feeds, or changing formula concentrations to achieve a calculated target.
+
+Do not make unsupported health diagnoses.
+
+Consider that prematurity, early neonatal feeding, mixed feeding, illness, and complementary foods can change the interpretation of intake estimates.
+
+If a baby has concerning symptoms or significant feeding difficulties, direct the caregiver to appropriate medical care rather than making autonomous treatment recommendations.
+
+Include concise contextual guidance, not repetitive alarming disclaimers.
+
+## 23. REQUIRED QUALITY STANDARD
+
+The final application must feel like a premium consumer Android product.
+
+Requirements:
+
+- Every screen has a real implementation.
+- Every primary button functions.
+- Every saved entry persists.
+- Charts reflect actual data.
+- Medical reference calculations use genuine data.
+- Empty states are elegant and useful.
+- Error handling is clear.
+- The app works without the internet.
+- It launches without crashes.
+- Large and small phone screens are supported.
+- Dark mode is complete.
+- Accessibility labels and touch targets are appropriate.
+- Input fields validate data correctly.
+- Navigation is intuitive.
+- Animations are restrained and performant.
+
+Do not leave dead buttons, fake functionality, lorem ipsum, or hardcoded demonstration records in the final application.
+
+## 24. DEVELOPMENT AND TESTING INSTRUCTIONS
+
+Implement this in a logical order while retaining all requirements:
+
+Phase 1: Project architecture, design system, onboarding, baby profiles, and Room database.
+
+Phase 2: Feeding tracking, breastfeeding timers, pumping, history, reminders, and daily dashboard.
+
+Phase 3: Formula management, diapers, sleep, symptoms, and notifications.
+
+Phase 4: Genuine WHO growth data integration, percentile engine, charts, and validation.
+
+Phase 5: NHS/AAP feeding-reference calculations and personalized comparisons.
+
+Phase 6: Analytics, educational guidance, exports, backups, widgets, and final UI polish.
+
+Build and test after each phase.
+
+Add unit tests for feeding totals, conversions, reminder intervals, bottle safety timing, age calculation, and growth-reference computations.
+
+For WHO validation, compare known official reference-table cases against the implementation and document the expected and actual results.
+
+Verify that source datasets have been successfully bundled before marking percentile features complete.
+
+Provide a brief final implementation report identifying:
+
+- Completed working features.
+- Verified WHO reference assets.
+- Reference source URLs and versions.
+- Tests performed.
+- Remaining limitations, if any.
+
+## 25. FINAL INSTRUCTION
+
+Start implementing the actual native Android application now.
+
+Generate the real Kotlin and Jetpack Compose project files, database, services, UI screens, navigation, alarms, charts, bundled reference data, and required resources.
+
+Do not stop after producing a feature list, architecture overview, or screen mockups.
+
+Prioritize reliability and working functionality over superficial visual complexity.
+
+The result should be a beautiful, accurate, offline-first baby feeding and growth tracking application with trustworthy international reference comparisons.
