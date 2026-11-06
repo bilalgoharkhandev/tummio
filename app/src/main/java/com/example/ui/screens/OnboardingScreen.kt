@@ -135,19 +135,19 @@ fun OnboardingScreen(
                             }
                         }
 
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                             OutlinedTextField(
                                 value = birthWeightText,
                                 onValueChange = { birthWeightText = it },
                                 label = { Text("Birth Weight (kg)") },
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp)
                             )
                             OutlinedTextField(
                                 value = birthLengthText,
                                 onValueChange = { birthLengthText = it },
                                 label = { Text("Birth Length (cm)") },
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp)
                             )
                         }
