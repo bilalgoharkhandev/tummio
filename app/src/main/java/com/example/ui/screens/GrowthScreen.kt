@@ -236,6 +236,7 @@ fun GrowthScreen(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun AddGrowthDialog(
     onDismiss: () -> Unit,
