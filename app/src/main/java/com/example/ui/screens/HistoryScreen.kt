@@ -296,6 +296,7 @@ private fun TimelineCard(
                 ) {
                     Text(
                         text = title,
+                        modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
                         color = MaterialTheme.colorScheme.onSurface
                     )
