@@ -63,28 +63,23 @@ fun InsightsScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(18.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                "Pediatric Feeding Reference",
-                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-                                color = MaterialTheme.colorScheme.onSurface
+                        Text(
+                            "Pediatric Feeding Reference",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            FilterChip(
+                                selected = !useAap,
+                                onClick = { coroutineScope.launch { viewModel.preferences.setUseAap(false) } },
+                                label = { Text("NHS (UK)") }
                             )
-                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                FilterChip(
-                                    selected = !useAap,
-                                    onClick = { coroutineScope.launch { viewModel.preferences.setUseAap(false) } },
-                                    label = { Text("NHS (UK)", style = MaterialTheme.typography.labelSmall) }
-                                )
-                                FilterChip(
-                                    selected = useAap,
-                                    onClick = { coroutineScope.launch { viewModel.preferences.setUseAap(true) } },
-                                    label = { Text("AAP (US)", style = MaterialTheme.typography.labelSmall) }
-                                )
-                            }
+                            FilterChip(
+                                selected = useAap,
+                                onClick = { coroutineScope.launch { viewModel.preferences.setUseAap(true) } },
+                                label = { Text("AAP (US)") }
+                            )
                         }
 
                         Spacer(modifier = Modifier.height(12.dp))
