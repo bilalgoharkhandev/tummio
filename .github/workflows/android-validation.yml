@@ -17,7 +17,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
+      # ubuntu-latest already includes an Android SDK. The setup-android action
+      # currently fails while requesting the removed legacy SDK 'tools' package.
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.3.1'
