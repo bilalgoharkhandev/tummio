@@ -23,7 +23,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun SettingsScreen(
     viewModel: MainViewModel,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateReminders: () -> Unit
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -79,10 +80,11 @@ fun SettingsScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column {
+                            Column(modifier = Modifier.weight(1f)) {
                                 Text("Measurement Units", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
                                 Text(if (isMetric) "Metric (mL, kg, cm)" else "US Customary (fl oz, lb, in)", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
+                            Spacer(Modifier.width(8.dp))
                             Switch(
                                 checked = isMetric,
                                 onCheckedChange = { coroutineScope.launch { viewModel.preferences.setMetric(it) } }
@@ -96,15 +98,38 @@ fun SettingsScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column {
+                            Column(modifier = Modifier.weight(1f)) {
                                 Text("Guideline Calculation Standard", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
                                 Text(if (useAap) "AAP US (2.5 oz/lb/day)" else "NHS UK (150–200 mL/kg/day)", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
+                            Spacer(Modifier.width(8.dp))
                             FilterChip(
                                 selected = useAap,
                                 onClick = { coroutineScope.launch { viewModel.preferences.setUseAap(!useAap) } },
                                 label = { Text(if (useAap) "AAP" else "NHS") }
                             )
+                        }
+                    }
+                }
+            }
+
+            // Reminders are managed per baby and per activity.
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                ) {
+                    Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("Smart Reminders", style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold)
+                        Text("Customize feeding, sleep and diaper check alerts for each baby.",
+                            style = MaterialTheme.typography.bodyMedium)
+                        Button(onClick = onNavigateReminders,
+                            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+                            Icon(Icons.Outlined.NotificationsActive, contentDescription = null)
+                            Spacer(Modifier.width(8.dp))
+                            Text("Manage Reminders")
                         }
                     }
                 }
