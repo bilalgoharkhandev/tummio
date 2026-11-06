@@ -185,6 +185,7 @@ fun LittleRoutineApp(viewModel: MainViewModel, requestedDestination: String?, on
                                     contentDescription = item.label
                                 )
                             },
+                            alwaysShowLabel = false,
                             label = {
                                 Text(
                                     text = item.label,
